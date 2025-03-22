@@ -1,43 +1,28 @@
-import logging
-from enum import Enum
-from dataclasses import dataclass
-from typing import List, Dict, Any
-from datetime import datetime
-import json
-from pathlib import Path
-import random
-import threading
 import time
+import uuid
+from typing import Dict, List, Any
+import random
+import logging
+from datetime import datetime
+from pathlib import Path
 
-class AttackType(Enum):
-    BOTNET = "botnet"
-    DDOS = "ddos"
-    DATA_THEFT = "data_theft"
-    AUTH_ATTACK = "authentication"
-    PROTOCOL_EXPLOIT = "protocol_exploit"
-
-class AttackStatus(Enum):
-    PLANNED = "planned"
-    IN_PROGRESS = "in_progress"
-    COMPLETED = "completed"
-    FAILED = "failed"
-
-@dataclass
 class AttackConfig:
-    type: AttackType
-    targets: List[str]
-    duration: int
-    parameters: Dict[str, Any]
+    def __init__(self, attack_type: str, targets: List[str], duration: int = 300):
+        """Initialize an attack configuration."""
+        self.id = str(uuid.uuid4())
+        self.type = attack_type
+        self.targets = targets
+        self.duration = duration
+        self.start_time = None
+        self.status = "initialized"
 
 class AttackSimulator:
-    def __init__(self, iot_network=None):
-        """Initialize attack simulator with logging."""
+    def __init__(self, network):
+        """Initialize attack simulator with network reference."""
         self._setup_logging()
+        self.network = network
         self.active_attacks = {}
-        self.attack_history = []
-        self.iot_network = iot_network
-        self.attack_threads = {}
-        
+
     def _setup_logging(self):
         """Configure attack-specific logging."""
         log_dir = Path("logs")
@@ -56,226 +41,181 @@ class AttackSimulator:
         )
         self.logger = logging.getLogger("AttackSimulator")
 
-    def create_botnet_attack(self, targets: List[str]) -> AttackConfig:
+    def create_botnet_attack(self, targets: List[str], duration: int = 300) -> AttackConfig:
         """Create a botnet attack configuration."""
-        return AttackConfig(
-            type=AttackType.BOTNET,
+        self.logger.info(f"Creating botnet attack targeting {targets}")
+        attack_id = f"botnet_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        config = AttackConfig(
+            attack_type="botnet",
             targets=targets,
-            duration=300,  # 5 minutes
-            parameters={
-                "propagation_method": "malware",
-                "c2_server": "simulated_c2_server",
-                "bot_behavior": {
-                    "scan_rate": 100,
-                    "infection_probability": 0.7,
-                    "command_interval": 30
-                }
-            }
+            duration=duration
         )
+        self.logger.info(f"Attack {attack_id} created")
+        return config
 
-    def create_ddos_attack(self, targets: List[str]) -> AttackConfig:
+    def create_ddos_attack(self, targets: List[str], duration: int = 300) -> AttackConfig:
         """Create a DDoS attack configuration."""
-        return AttackConfig(
-            type=AttackType.DDOS,
+        self.logger.info(f"Creating DDoS attack targeting {targets}")
+        attack_id = f"ddos_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        config = AttackConfig(
+            attack_type="ddos",
             targets=targets,
-            duration=180,  # 3 minutes
-            parameters={
-                "attack_type": "syn_flood",
-                "packets_per_second": 1000,
-                "packet_size": 64,
-                "source_ips": ["simulated_ip_range"]
-            }
+            duration=duration
         )
+        self.logger.info(f"Attack {attack_id} created")
+        return config
 
-    def create_data_theft_attack(self, targets: List[str]) -> AttackConfig:
-        """Create a data theft attack configuration."""
-        return AttackConfig(
-            type=AttackType.DATA_THEFT,
+    def create_mitm_attack(self, targets: List[str], duration: int = 300) -> AttackConfig:
+        """Create a Man-in-the-Middle attack configuration."""
+        self.logger.info(f"Creating MitM attack targeting {targets}")
+        attack_id = f"mitm_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        config = AttackConfig(
+            attack_type="mitm",
             targets=targets,
-            duration=240,  # 4 minutes
-            parameters={
-                "method": "packet_sniffing",
-                "data_types": ["credentials", "sensor_data", "user_info"],
-                "exfiltration_rate": 50  # KB/s
-            }
+            duration=duration
         )
+        self.logger.info(f"Attack {attack_id} created")
+        return config
 
-    def create_auth_attack(self, targets: List[str]) -> AttackConfig:
-        """Create an authentication attack configuration."""
-        return AttackConfig(
-            type=AttackType.AUTH_ATTACK,
-            targets=targets,
-            duration=120,  # 2 minutes
-            parameters={
-                "method": "brute_force",
-                "attempts_per_second": 10,
-                "credential_list": "common_passwords",
-                "timeout": 1
-            }
-        )
-
-    def create_protocol_attack(self, targets: List[str]) -> AttackConfig:
-        """Create a protocol-specific attack configuration."""
-        return AttackConfig(
-            type=AttackType.PROTOCOL_EXPLOIT,
-            targets=targets,
-            duration=150,  # 2.5 minutes
-            parameters={
-                "protocol": "MQTT",
-                "exploit_type": "topic_injection",
-                "payload_size": 256,
-                "interval": 5
-            }
-        )
-    
-    def _simulate_attack_effects(self, attack_id: str, attack_config: AttackConfig):
-        """Simulate the effects of an attack on the IoT network."""
-        while attack_id in self.active_attacks and self.active_attacks[attack_id]["status"] == AttackStatus.IN_PROGRESS.value:
-            try:
-                # Get target devices
-                for target_id in attack_config.targets:
-                    if target_id in self.iot_network.devices:
-                        device = self.iot_network.devices[target_id]
-                        
-                        # Apply attack effects based on attack type
-                        if attack_config.type == AttackType.BOTNET:
-                            # Simulate botnet effects
-                            device.metrics["cpu_usage"] = min(100, device.metrics["cpu_usage"] + random.uniform(20, 40))
-                            device.metrics["memory_usage"] = min(100, device.metrics["memory_usage"] + random.uniform(15, 30))
-                            device.metrics["bandwidth_usage"] = min(100, device.metrics["bandwidth_usage"] + random.uniform(30, 50))
-                            device.metrics["error_count"] += random.randint(1, 3)
-                            
-                        elif attack_config.type == AttackType.DDOS:
-                            # Simulate DDoS effects
-                            device.metrics["bandwidth_usage"] = min(100, device.metrics["bandwidth_usage"] + random.uniform(60, 90))
-                            device.metrics["packet_count"] += attack_config.parameters["packets_per_second"]
-                            device.metrics["error_count"] += random.randint(3, 7)
-                            
-                        elif attack_config.type == AttackType.DATA_THEFT:
-                            # Simulate data theft effects
-                            device.metrics["bandwidth_usage"] = min(100, device.metrics["bandwidth_usage"] + random.uniform(10, 20))
-                            device.metrics["packet_count"] += random.randint(50, 100)
-                            
-                        elif attack_config.type == AttackType.AUTH_ATTACK:
-                            # Simulate authentication attack effects
-                            device.metrics["cpu_usage"] = min(100, device.metrics["cpu_usage"] + random.uniform(10, 25))
-                            device.metrics["error_count"] += random.randint(1, 5)
-                            
-                        elif attack_config.type == AttackType.PROTOCOL_EXPLOIT:
-                            # Simulate protocol exploit effects
-                            device.metrics["cpu_usage"] = min(100, device.metrics["cpu_usage"] + random.uniform(15, 35))
-                            device.metrics["memory_usage"] = min(100, device.metrics["memory_usage"] + random.uniform(10, 20))
-                            device.metrics["error_count"] += random.randint(2, 4)
-                
-                # Add attack event
-                event = {
-                    "timestamp": datetime.now().isoformat(),
-                    "type": "attack_impact",
-                    "details": {
-                        "affected_devices": attack_config.targets,
-                        "impact_level": "high"
-                    }
-                }
-                self.active_attacks[attack_id]["events"].append(event)
-                
-            except Exception as e:
-                self.logger.error(f"Error in attack simulation: {str(e)}")
-                
-            time.sleep(1)  # Update effects every second
-
-    def launch_attack(self, attack_config: AttackConfig):
-        """Launch a configured attack."""
-        try:
-            self.logger.info(f"Launching {attack_config.type.value} attack on targets: {attack_config.targets}")
-            
-            if not self.iot_network:
-                raise ValueError("IoT network not configured for attack simulation")
-            
-            # Generate unique attack ID
-            attack_id = f"{attack_config.type.value}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-            
-            # Record attack start
-            attack_record = {
-                "id": attack_id,
-                "config": {
-                    "type": attack_config.type.value,
-                    "targets": attack_config.targets,
-                    "duration": attack_config.duration,
-                    "parameters": attack_config.parameters
-                },
-                "status": AttackStatus.IN_PROGRESS.value,
-                "start_time": datetime.now().isoformat(),
-                "events": []
-            }
-            
-            # Store active attack
-            self.active_attacks[attack_id] = attack_record
-            
-            # Start attack simulation thread
-            attack_thread = threading.Thread(
-                target=self._simulate_attack_effects,
-                args=(attack_id, attack_config)
-            )
-            attack_thread.daemon = True
-            attack_thread.start()
-            
-            # Store thread reference
-            self.attack_threads[attack_id] = attack_thread
-            
-            # Schedule attack stop
-            stop_thread = threading.Thread(
-                target=self._schedule_attack_stop,
-                args=(attack_id, attack_config.duration)
-            )
-            stop_thread.daemon = True
-            stop_thread.start()
-            
-            self.logger.info(f"Attack {attack_id} launched successfully")
-            return attack_id
-            
-        except Exception as e:
-            self.logger.error(f"Failed to launch attack: {str(e)}")
-            raise
-
-    def _schedule_attack_stop(self, attack_id: str, duration: int):
-        """Schedule the attack to stop after specified duration."""
-        time.sleep(duration)
-        if attack_id in self.active_attacks:
-            self.stop_attack(attack_id)
-
-    def stop_attack(self, attack_id: str):
-        """Stop an active attack."""
-        try:
-            if attack_id not in self.active_attacks:
-                raise ValueError(f"Attack {attack_id} not found in active attacks")
-            
-            attack_record = self.active_attacks[attack_id]
-            attack_record["status"] = AttackStatus.COMPLETED.value
-            attack_record["end_time"] = datetime.now().isoformat()
-            
-            # Wait for attack thread to complete
-            if attack_id in self.attack_threads:
-                self.attack_threads[attack_id].join(timeout=5)
-                del self.attack_threads[attack_id]
-            
-            # Move to history
-            self.attack_history.append(attack_record)
-            del self.active_attacks[attack_id]
-            
-            self.logger.info(f"Attack {attack_id} stopped successfully")
-            
-        except Exception as e:
-            self.logger.error(f"Failed to stop attack {attack_id}: {str(e)}")
-            raise
-
-    def get_attack_status(self, attack_id: str) -> dict:
-        """Get the current status of an attack."""
-        if attack_id in self.active_attacks:
-            return self.active_attacks[attack_id]
+    def launch_attack(self, config: AttackConfig) -> str:
+        """Launch an attack with the given configuration."""
+        self.logger.info(f"Launching {config.type} attack on targets: {config.targets}")
         
-        # Search in history
-        for attack in self.attack_history:
-            if attack["id"] == attack_id:
-                return attack
+        config.start_time = time.time()
+        config.status = "active"
+        self.active_attacks[config.id] = config
+        
+        # Apply attack effects to network
+        for target in config.targets:
+            device = self.network.devices.get(target)
+            if device:
+                if config.type == "botnet":
+                    self._apply_botnet_effects(device)
+                elif config.type == "ddos":
+                    self._apply_ddos_effects(device)
+                elif config.type == "mitm":
+                    self._apply_mitm_effects(device)
+        
+        self.logger.info(f"Attack {config.id} launched successfully")
+        return config.id
+
+    def _apply_botnet_effects(self, device):
+        """Apply botnet attack effects to device."""
+        device.metrics["cpu_usage"] *= random.uniform(1.3, 1.7)  # Increased CPU usage
+        device.metrics["memory_usage"] *= random.uniform(1.2, 1.5)  # Increased memory usage
+        device.metrics["error_count"] += random.randint(5, 15)  # More errors
+        device.metrics["bandwidth_usage"] *= random.uniform(1.1, 1.4)  # Increased bandwidth
+        
+    def _apply_ddos_effects(self, device):
+        """Apply DDoS attack effects to device."""
+        device.metrics["bandwidth_usage"] *= random.uniform(1.8, 2.5)  # Major bandwidth spike
+        device.metrics["error_count"] += random.randint(10, 20)  # Many errors
+        device.metrics["packet_count"] *= random.uniform(1.4, 1.8)  # Increased packets
+        device.metrics["cpu_usage"] *= random.uniform(1.2, 1.6)  # High CPU load
+        
+    def _apply_mitm_effects(self, device):
+        """Apply MitM attack effects to device."""
+        device.metrics["error_count"] += random.randint(3, 8)  # Some errors
+        device.metrics["packet_count"] *= random.uniform(1.1, 1.3)  # Slightly increased packets
+        device.metrics["bandwidth_usage"] *= random.uniform(1.05, 1.2)  # Minor bandwidth increase
+        
+    def get_attack_status(self, attack_id: str) -> Dict[str, Any]:
+        """Get the current status of an attack."""
+        if attack_id not in self.active_attacks:
+            return {"status": "not_found", "events": []}
+            
+        attack = self.active_attacks[attack_id]
+        elapsed_time = time.time() - attack.start_time
+        
+        # Check if attack duration has elapsed
+        if elapsed_time >= attack.duration:
+            if attack.status == "active":
+                self._cleanup_attack(attack)
+            return {
+                "status": "completed",
+                "type": attack.type,
+                "elapsed_time": elapsed_time,
+                "events": self._generate_attack_events(attack)
+            }
+            
+        return {
+            "status": "in_progress",
+            "type": attack.type,
+            "elapsed_time": elapsed_time,
+            "events": self._generate_attack_events(attack)
+        }
+
+    def _cleanup_attack(self, attack: AttackConfig):
+        """Clean up attack effects."""
+        attack.status = "completed"
+        
+        # Restore normal device operation
+        for target in attack.targets:
+            device = self.network.devices.get(target)
+            if device:
+                device.metrics["cpu_usage"] = max(
+                    device.metrics["cpu_usage"] * random.uniform(0.6, 0.8),
+                    random.uniform(20, 60)
+                )
+                device.metrics["memory_usage"] = max(
+                    device.metrics["memory_usage"] * random.uniform(0.7, 0.9),
+                    random.uniform(30, 70)
+                )
+                device.metrics["bandwidth_usage"] = max(
+                    device.metrics["bandwidth_usage"] * random.uniform(0.5, 0.7),
+                    random.uniform(10, 50)
+                )
+
+    def _generate_attack_events(self, attack: AttackConfig) -> List[Dict[str, Any]]:
+        """Generate event data for the attack."""
+        events = []
+        elapsed_time = time.time() - attack.start_time
+        
+        # Generate events based on attack type and progress
+        if attack.type == "botnet":
+            if elapsed_time < attack.duration * 0.3:
+                events.append({
+                    "phase": "initial",
+                    "description": "Establishing control over target devices"
+                })
+            elif elapsed_time < attack.duration * 0.7:
+                events.append({
+                    "phase": "active",
+                    "description": "Executing malicious commands on infected devices"
+                })
+            else:
+                events.append({
+                    "phase": "final",
+                    "description": "Maintaining persistence and hiding traces"
+                })
                 
-        raise ValueError(f"Attack {attack_id} not found")
+        elif attack.type == "ddos":
+            if elapsed_time < attack.duration * 0.2:
+                events.append({
+                    "phase": "initial",
+                    "description": "Building up attack traffic"
+                })
+            elif elapsed_time < attack.duration * 0.8:
+                events.append({
+                    "phase": "peak",
+                    "description": "Maximum traffic flood"
+                })
+            else:
+                events.append({
+                    "phase": "decreasing",
+                    "description": "Attack traffic reducing"
+                })
+                
+        elif attack.type == "mitm":
+            if elapsed_time < attack.duration * 0.4:
+                events.append({
+                    "phase": "intercept",
+                    "description": "Intercepting network traffic"
+                })
+            else:
+                events.append({
+                    "phase": "active",
+                    "description": "Monitoring and potentially modifying traffic"
+                })
+        
+        return events

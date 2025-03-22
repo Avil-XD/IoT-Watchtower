@@ -159,3 +159,9 @@ elastic_transport.ConnectionError: Connection error caused by: NewConnectionErro
 2025-03-22 22:02:18,044 - IoTSimulation - INFO - Network setup completed successfully
 2025-03-22 22:02:18,045 - IoTSimulation - INFO - Starting simulation
 2025-03-22 22:02:18,047 - DataCollection - INFO - Letting network stabilize...
+2025-03-22 22:02:48,051 - DataCollection - INFO - Collecting normal behavior data for 300 seconds
+2025-03-22 22:07:48,521 - DataCollection - INFO - Simulating botnet attack
+2025-03-22 22:07:48,521 - DataCollection - ERROR - Data collection failed: 'AttackSimulator' object has no attribute 'create_attack'
+2025-03-22 22:07:48,521 - DataCollection - INFO - Stopping simulation...
+2025-03-22 22:07:48,521 - IoTSimulation - INFO - Stopping simulation
+2025-03-22 22:07:49,374 - DataCollection - INFO - Data collection completed

@@ -1,0 +1,416 @@
+2025-03-22 22:14:45,157 - DataCollection - INFO - Initializing components...
+2025-03-22 22:14:49,266 - elastic_transport.transport - INFO - HEAD http://localhost:9200/ [status:N/A duration:4.107s]
+2025-03-22 22:14:49,266 - elastic_transport.node_pool - WARNING - Node <Urllib3HttpNode(http://localhost:9200)> has failed for 1 times in a row, putting on 1 second timeout
+2025-03-22 22:14:49,267 - elastic_transport.transport - WARNING - Retrying request after failure (attempt 0 of 3)
+Traceback (most recent call last):
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\elastic_transport\_node\_http_urllib3.py", line 167, in perform_request
+    response = self.pool.urlopen(
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\util\retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\util\util.py", line 39, in reraise
+    raise value
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\http\client.py", line 1277, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\http\client.py", line 1037, in _send_output
+    self.send(msg)
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\http\client.py", line 975, in send
+    self.connect()
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\connection.py", line 276, in connect
+    self.sock = self._new_conn()
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\connection.py", line 213, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x000002F76C45B3D0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\elastic_transport\_transport.py", line 342, in perform_request
+    resp = node.perform_request(
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\elastic_transport\_node\_http_urllib3.py", line 202, in perform_request
+    raise err from e
+elastic_transport.ConnectionError: Connection error caused by: NewConnectionError(<urllib3.connection.HTTPConnection object at 0x000002F76C45B3D0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it)
+2025-03-22 22:14:53,355 - elastic_transport.transport - INFO - HEAD http://localhost:9200/ [status:N/A duration:4.072s]
+2025-03-22 22:14:53,356 - elastic_transport.node_pool - WARNING - Node <Urllib3HttpNode(http://localhost:9200)> has failed for 2 times in a row, putting on 2 second timeout
+2025-03-22 22:14:53,356 - elastic_transport.transport - WARNING - Retrying request after failure (attempt 1 of 3)
+Traceback (most recent call last):
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\elastic_transport\_node\_http_urllib3.py", line 167, in perform_request
+    response = self.pool.urlopen(
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\util\retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\util\util.py", line 39, in reraise
+    raise value
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\http\client.py", line 1277, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\http\client.py", line 1037, in _send_output
+    self.send(msg)
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\http\client.py", line 975, in send
+    self.connect()
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\connection.py", line 276, in connect
+    self.sock = self._new_conn()
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\connection.py", line 213, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x000002F76C45B700>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\elastic_transport\_transport.py", line 342, in perform_request
+    resp = node.perform_request(
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\elastic_transport\_node\_http_urllib3.py", line 202, in perform_request
+    raise err from e
+elastic_transport.ConnectionError: Connection error caused by: NewConnectionError(<urllib3.connection.HTTPConnection object at 0x000002F76C45B700>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it)
+2025-03-22 22:14:53,360 - elastic_transport.node_pool - INFO - Resurrected node <Urllib3HttpNode(http://localhost:9200)> (force=False)
+2025-03-22 22:14:57,452 - elastic_transport.transport - INFO - HEAD http://localhost:9200/ [status:N/A duration:4.092s]
+2025-03-22 22:14:57,452 - elastic_transport.node_pool - WARNING - Node <Urllib3HttpNode(http://localhost:9200)> has failed for 3 times in a row, putting on 4 second timeout
+2025-03-22 22:14:57,453 - elastic_transport.transport - WARNING - Retrying request after failure (attempt 2 of 3)
+Traceback (most recent call last):
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\elastic_transport\_node\_http_urllib3.py", line 167, in perform_request
+    response = self.pool.urlopen(
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\util\retry.py", line 449, in increment
+    raise reraise(type(error), error, _stacktrace)
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\util\util.py", line 39, in reraise
+    raise value
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\http\client.py", line 1277, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\http\client.py", line 1037, in _send_output
+    self.send(msg)
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\http\client.py", line 975, in send
+    self.connect()
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\connection.py", line 276, in connect
+    self.sock = self._new_conn()
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\connection.py", line 213, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x000002F76C45B9D0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\elastic_transport\_transport.py", line 342, in perform_request
+    resp = node.perform_request(
+  File "C:\Users\Saunav Barman\AppData\Local\Programs\Python\Python310\lib\site-packages\elastic_transport\_node\_http_urllib3.py", line 202, in perform_request
+    raise err from e
+elastic_transport.ConnectionError: Connection error caused by: NewConnectionError(<urllib3.connection.HTTPConnection object at 0x000002F76C45B9D0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it)
+2025-03-22 22:14:57,456 - elastic_transport.node_pool - INFO - Resurrected node <Urllib3HttpNode(http://localhost:9200)> (force=False)
+2025-03-22 22:15:01,550 - elastic_transport.transport - INFO - HEAD http://localhost:9200/ [status:N/A duration:4.094s]
+2025-03-22 22:15:01,550 - elastic_transport.node_pool - WARNING - Node <Urllib3HttpNode(http://localhost:9200)> has failed for 4 times in a row, putting on 8 second timeout
+2025-03-22 22:15:01,551 - EventCollector - WARNING - Failed to connect to Elasticsearch: Connection error
+2025-03-22 22:15:01,551 - EventCollector - INFO - Events will be stored in local file
+2025-03-22 22:15:01,553 - IoTSimulation - INFO - Setting up network with 3 devices
+2025-03-22 22:15:01,553 - IoTSimulation - INFO - Setting up device: camera_01 (SmartCamera)
+2025-03-22 22:15:01,553 - IoTSimulation - INFO - Setting up device: lock_01 (SmartLock)
+2025-03-22 22:15:01,553 - IoTSimulation - INFO - Setting up device: thermostat_01 (SmartThermostat)
+2025-03-22 22:15:01,553 - IoTSimulation - INFO - Network setup completed successfully
+2025-03-22 22:15:01,554 - IoTSimulation - INFO - Starting simulation
+2025-03-22 22:15:01,555 - DataCollection - INFO - Letting network stabilize...
+2025-03-22 22:15:31,567 - DataCollection - INFO - Collecting normal behavior data for 300 seconds
+2025-03-22 22:20:32,049 - DataCollection - INFO - Simulating botnet attack
+2025-03-22 22:20:32,049 - AttackSimulator - INFO - Launching botnet attack on targets: ['camera_01', 'lock_01']
+2025-03-22 22:20:32,050 - AttackSimulator - INFO - Attack botnet_20250322_222032 launched successfully
+2025-03-22 22:20:32,051 - DataCollection - INFO - 
+Attack Status at 0.0s:
+2025-03-22 22:20:32,052 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:20:32,052 - DataCollection - INFO - Events: 1 recorded
+2025-03-22 22:20:37,066 - DataCollection - INFO - 
+Attack Status at 5.0s:
+2025-03-22 22:20:37,066 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:20:37,066 - DataCollection - INFO - Events: 5 recorded
+2025-03-22 22:20:42,073 - DataCollection - INFO - 
+Attack Status at 10.0s:
+2025-03-22 22:20:42,074 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:20:42,074 - DataCollection - INFO - Events: 10 recorded
+2025-03-22 22:20:47,089 - DataCollection - INFO - 
+Attack Status at 15.0s:
+2025-03-22 22:20:47,089 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:20:47,089 - DataCollection - INFO - Events: 15 recorded
+2025-03-22 22:20:52,095 - DataCollection - INFO - 
+Attack Status at 20.0s:
+2025-03-22 22:20:52,095 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:20:52,095 - DataCollection - INFO - Events: 20 recorded
+2025-03-22 22:20:57,103 - DataCollection - INFO - 
+Attack Status at 25.1s:
+2025-03-22 22:20:57,104 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:20:57,104 - DataCollection - INFO - Events: 25 recorded
+2025-03-22 22:21:02,120 - DataCollection - INFO - 
+Attack Status at 30.1s:
+2025-03-22 22:21:02,120 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:21:02,120 - DataCollection - INFO - Events: 30 recorded
+2025-03-22 22:21:07,125 - DataCollection - INFO - 
+Attack Status at 35.1s:
+2025-03-22 22:21:07,125 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:21:07,125 - DataCollection - INFO - Events: 35 recorded
+2025-03-22 22:21:12,128 - DataCollection - INFO - 
+Attack Status at 40.1s:
+2025-03-22 22:21:12,128 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:21:12,129 - DataCollection - INFO - Events: 40 recorded
+2025-03-22 22:21:17,134 - DataCollection - INFO - 
+Attack Status at 45.1s:
+2025-03-22 22:21:17,134 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:21:17,134 - DataCollection - INFO - Events: 45 recorded
+2025-03-22 22:21:22,138 - DataCollection - INFO - 
+Attack Status at 50.1s:
+2025-03-22 22:21:22,138 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:21:22,138 - DataCollection - INFO - Events: 50 recorded
+2025-03-22 22:21:27,153 - DataCollection - INFO - 
+Attack Status at 55.1s:
+2025-03-22 22:21:27,154 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:21:27,154 - DataCollection - INFO - Events: 55 recorded
+2025-03-22 22:21:32,159 - DataCollection - INFO - 
+Attack Status at 60.1s:
+2025-03-22 22:21:32,159 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:21:32,159 - DataCollection - INFO - Events: 60 recorded
+2025-03-22 22:21:37,167 - DataCollection - INFO - 
+Attack Status at 65.1s:
+2025-03-22 22:21:37,167 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:21:37,167 - DataCollection - INFO - Events: 65 recorded
+2025-03-22 22:21:42,171 - DataCollection - INFO - 
+Attack Status at 70.1s:
+2025-03-22 22:21:42,171 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:21:42,171 - DataCollection - INFO - Events: 70 recorded
+2025-03-22 22:21:47,183 - DataCollection - INFO - 
+Attack Status at 75.1s:
+2025-03-22 22:21:47,183 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:21:47,183 - DataCollection - INFO - Events: 75 recorded
+2025-03-22 22:21:52,190 - DataCollection - INFO - 
+Attack Status at 80.1s:
+2025-03-22 22:21:52,190 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:21:52,190 - DataCollection - INFO - Events: 80 recorded
+2025-03-22 22:21:57,204 - DataCollection - INFO - 
+Attack Status at 85.2s:
+2025-03-22 22:21:57,204 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:21:57,204 - DataCollection - INFO - Events: 85 recorded
+2025-03-22 22:22:02,209 - DataCollection - INFO - 
+Attack Status at 90.2s:
+2025-03-22 22:22:02,210 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:22:02,210 - DataCollection - INFO - Events: 90 recorded
+2025-03-22 22:22:07,218 - DataCollection - INFO - 
+Attack Status at 95.2s:
+2025-03-22 22:22:07,218 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:22:07,218 - DataCollection - INFO - Events: 95 recorded
+2025-03-22 22:22:12,233 - DataCollection - INFO - 
+Attack Status at 100.2s:
+2025-03-22 22:22:12,234 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:22:12,234 - DataCollection - INFO - Events: 100 recorded
+2025-03-22 22:22:17,235 - DataCollection - INFO - 
+Attack Status at 105.2s:
+2025-03-22 22:22:17,235 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:22:17,235 - DataCollection - INFO - Events: 105 recorded
+2025-03-22 22:22:22,237 - DataCollection - INFO - 
+Attack Status at 110.2s:
+2025-03-22 22:22:22,238 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:22:22,238 - DataCollection - INFO - Events: 110 recorded
+2025-03-22 22:22:27,244 - DataCollection - INFO - 
+Attack Status at 115.2s:
+2025-03-22 22:22:27,246 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:22:27,246 - DataCollection - INFO - Events: 115 recorded
+2025-03-22 22:22:32,248 - DataCollection - INFO - 
+Attack Status at 120.2s:
+2025-03-22 22:22:32,248 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:22:32,248 - DataCollection - INFO - Events: 119 recorded
+2025-03-22 22:22:37,253 - DataCollection - INFO - 
+Attack Status at 125.2s:
+2025-03-22 22:22:37,253 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:22:37,253 - DataCollection - INFO - Events: 124 recorded
+2025-03-22 22:22:42,260 - DataCollection - INFO - 
+Attack Status at 130.2s:
+2025-03-22 22:22:42,261 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:22:42,261 - DataCollection - INFO - Events: 129 recorded
+2025-03-22 22:22:47,275 - DataCollection - INFO - 
+Attack Status at 135.2s:
+2025-03-22 22:22:47,275 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:22:47,275 - DataCollection - INFO - Events: 134 recorded
+2025-03-22 22:22:52,280 - DataCollection - INFO - 
+Attack Status at 140.2s:
+2025-03-22 22:22:52,280 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:22:52,280 - DataCollection - INFO - Events: 139 recorded
+2025-03-22 22:22:57,291 - DataCollection - INFO - 
+Attack Status at 145.2s:
+2025-03-22 22:22:57,291 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:22:57,291 - DataCollection - INFO - Events: 144 recorded
+2025-03-22 22:23:02,298 - DataCollection - INFO - 
+Attack Status at 150.2s:
+2025-03-22 22:23:02,299 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:23:02,299 - DataCollection - INFO - Events: 149 recorded
+2025-03-22 22:23:07,300 - DataCollection - INFO - 
+Attack Status at 155.2s:
+2025-03-22 22:23:07,301 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:23:07,301 - DataCollection - INFO - Events: 154 recorded
+2025-03-22 22:23:12,314 - DataCollection - INFO - 
+Attack Status at 160.3s:
+2025-03-22 22:23:12,314 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:23:12,314 - DataCollection - INFO - Events: 159 recorded
+2025-03-22 22:23:17,322 - DataCollection - INFO - 
+Attack Status at 165.3s:
+2025-03-22 22:23:17,322 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:23:17,322 - DataCollection - INFO - Events: 164 recorded
+2025-03-22 22:23:22,326 - DataCollection - INFO - 
+Attack Status at 170.3s:
+2025-03-22 22:23:22,326 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:23:22,326 - DataCollection - INFO - Events: 169 recorded
+2025-03-22 22:23:27,334 - DataCollection - INFO - 
+Attack Status at 175.3s:
+2025-03-22 22:23:27,334 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:23:27,334 - DataCollection - INFO - Events: 174 recorded
+2025-03-22 22:23:32,348 - DataCollection - INFO - Waiting for network recovery...
+2025-03-22 22:24:02,354 - DataCollection - INFO - Simulating ddos attack
+2025-03-22 22:24:02,354 - AttackSimulator - INFO - Launching ddos attack on targets: ['camera_01']
+2025-03-22 22:24:02,355 - AttackSimulator - INFO - Attack ddos_20250322_222402 launched successfully
+2025-03-22 22:24:02,355 - DataCollection - INFO - 
+Attack Status at 0.0s:
+2025-03-22 22:24:02,355 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:24:02,355 - DataCollection - INFO - Events: 1 recorded
+2025-03-22 22:24:07,367 - DataCollection - INFO - 
+Attack Status at 5.0s:
+2025-03-22 22:24:07,368 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:24:07,368 - DataCollection - INFO - Events: 5 recorded
+2025-03-22 22:24:12,377 - DataCollection - INFO - 
+Attack Status at 10.0s:
+2025-03-22 22:24:12,377 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:24:12,377 - DataCollection - INFO - Events: 10 recorded
+2025-03-22 22:24:17,384 - DataCollection - INFO - 
+Attack Status at 15.0s:
+2025-03-22 22:24:17,386 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:24:17,386 - DataCollection - INFO - Events: 15 recorded
+2025-03-22 22:24:22,394 - DataCollection - INFO - 
+Attack Status at 20.0s:
+2025-03-22 22:24:22,395 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:24:22,395 - DataCollection - INFO - Events: 20 recorded
+2025-03-22 22:24:27,405 - DataCollection - INFO - 
+Attack Status at 25.1s:
+2025-03-22 22:24:27,405 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:24:27,406 - DataCollection - INFO - Events: 25 recorded
+2025-03-22 22:24:32,408 - DataCollection - INFO - 
+Attack Status at 30.1s:
+2025-03-22 22:24:32,408 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:24:32,408 - DataCollection - INFO - Events: 30 recorded
+2025-03-22 22:24:37,412 - DataCollection - INFO - 
+Attack Status at 35.1s:
+2025-03-22 22:24:37,413 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:24:37,413 - DataCollection - INFO - Events: 35 recorded
+2025-03-22 22:24:42,417 - DataCollection - INFO - 
+Attack Status at 40.1s:
+2025-03-22 22:24:42,417 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:24:42,417 - DataCollection - INFO - Events: 40 recorded
+2025-03-22 22:24:47,423 - DataCollection - INFO - 
+Attack Status at 45.1s:
+2025-03-22 22:24:47,423 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:24:47,423 - DataCollection - INFO - Events: 45 recorded
+2025-03-22 22:24:52,425 - DataCollection - INFO - 
+Attack Status at 50.1s:
+2025-03-22 22:24:52,425 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:24:52,425 - DataCollection - INFO - Events: 50 recorded
+2025-03-22 22:24:57,430 - DataCollection - INFO - 
+Attack Status at 55.1s:
+2025-03-22 22:24:57,430 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:24:57,430 - DataCollection - INFO - Events: 55 recorded
+2025-03-22 22:25:02,440 - DataCollection - INFO - 
+Attack Status at 60.1s:
+2025-03-22 22:25:02,440 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:25:02,440 - DataCollection - INFO - Events: 60 recorded
+2025-03-22 22:25:07,448 - DataCollection - INFO - 
+Attack Status at 65.1s:
+2025-03-22 22:25:07,449 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:25:07,449 - DataCollection - INFO - Events: 65 recorded
+2025-03-22 22:25:12,455 - DataCollection - INFO - 
+Attack Status at 70.1s:
+2025-03-22 22:25:12,456 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:25:12,456 - DataCollection - INFO - Events: 70 recorded
+2025-03-22 22:25:17,463 - DataCollection - INFO - 
+Attack Status at 75.1s:
+2025-03-22 22:25:17,464 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:25:17,464 - DataCollection - INFO - Events: 75 recorded
+2025-03-22 22:25:22,475 - DataCollection - INFO - 
+Attack Status at 80.1s:
+2025-03-22 22:25:22,475 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:25:22,475 - DataCollection - INFO - Events: 80 recorded
+2025-03-22 22:25:27,483 - DataCollection - INFO - 
+Attack Status at 85.1s:
+2025-03-22 22:25:27,483 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:25:27,483 - DataCollection - INFO - Events: 85 recorded
+2025-03-22 22:25:32,485 - DataCollection - INFO - 
+Attack Status at 90.1s:
+2025-03-22 22:25:32,485 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:25:32,485 - DataCollection - INFO - Events: 90 recorded
+2025-03-22 22:25:32,998 - AttackSimulator - INFO - Attack botnet_20250322_222032 stopped successfully
+2025-03-22 22:25:37,495 - DataCollection - INFO - 
+Attack Status at 95.1s:
+2025-03-22 22:25:37,495 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:25:37,495 - DataCollection - INFO - Events: 95 recorded
+2025-03-22 22:25:42,497 - DataCollection - INFO - 
+Attack Status at 100.1s:
+2025-03-22 22:25:42,497 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:25:42,498 - DataCollection - INFO - Events: 100 recorded
+2025-03-22 22:25:47,501 - DataCollection - INFO - 
+Attack Status at 105.1s:
+2025-03-22 22:25:47,501 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:25:47,502 - DataCollection - INFO - Events: 105 recorded
+2025-03-22 22:25:52,510 - DataCollection - INFO - 
+Attack Status at 110.2s:
+2025-03-22 22:25:52,511 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:25:52,511 - DataCollection - INFO - Events: 110 recorded
+2025-03-22 22:25:57,528 - DataCollection - INFO - 
+Attack Status at 115.2s:
+2025-03-22 22:25:57,528 - DataCollection - INFO - Status: in_progress
+2025-03-22 22:25:57,528 - DataCollection - INFO - Events: 115 recorded
+2025-03-22 22:26:02,534 - DataCollection - INFO - Waiting for network recovery...
+2025-03-22 22:26:32,543 - DataCollection - INFO - Simulating mitm attack
+2025-03-22 22:26:32,543 - DataCollection - ERROR - Data collection failed: 'AttackSimulator' object has no attribute 'create_mitm_attack'
+2025-03-22 22:26:32,543 - DataCollection - INFO - Stopping simulation...
+2025-03-22 22:26:32,543 - IoTSimulation - INFO - Stopping simulation
+2025-03-22 22:26:33,420 - DataCollection - INFO - Data collection completed

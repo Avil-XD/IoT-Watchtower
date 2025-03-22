@@ -1,7 +1,0 @@
-README.md
-setup.py
-src/iot_security_simulation.egg-info/PKG-INFO
-src/iot_security_simulation.egg-info/SOURCES.txt
-src/iot_security_simulation.egg-info/dependency_links.txt
-src/iot_security_simulation.egg-info/requires.txt
-src/iot_security_simulation.egg-info/top_level.txt

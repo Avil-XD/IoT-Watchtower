@@ -1,0 +1,81 @@
+{
+  "mappings": {
+    "properties": {
+      "timestamp": {
+        "type": "date"
+      },
+      "event_type": {
+        "type": "keyword"
+      },
+      "source": {
+        "type": "keyword"
+      },
+      "target": {
+        "type": "keyword"
+      },
+      "severity": {
+        "type": "integer"
+      },
+      "attack_type": {
+        "type": "keyword"
+      },
+      "attack_id": {
+        "type": "keyword"
+      },
+      "details": {
+        "properties": {
+          "cpu_usage": {
+            "type": "float"
+          },
+          "memory_usage": {
+            "type": "float"
+          },
+          "bandwidth_usage": {
+            "type": "float"
+          },
+          "packet_count": {
+            "type": "long"
+          },
+          "error_count": {
+            "type": "long"
+          },
+          "attack_status": {
+            "type": "keyword"
+          },
+          "impact_level": {
+            "type": "keyword"
+          },
+          "affected_devices": {
+            "type": "keyword"
+          },
+          "protocol": {
+            "type": "keyword"
+          },
+          "encryption": {
+            "type": "keyword"
+          },
+          "auth_method": {
+            "type": "keyword"
+          }
+        }
+      },
+      "ml_classification": {
+        "properties": {
+          "predicted_type": {
+            "type": "keyword"
+          },
+          "confidence": {
+            "type": "float"
+          },
+          "model_version": {
+            "type": "keyword"
+          }
+        }
+      }
+    }
+  },
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0
+  }
+}

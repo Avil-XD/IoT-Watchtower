@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  elasticsearch:
+    image: elasticsearch:7.17.0
+    container_name: iot_elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - iot_monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: iot_grafana
+    depends_on:
+      - elasticsearch
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src/config/grafana_dashboard.json:/etc/grafana/provisioning/dashboards/iot_security.json
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=iotsecurity
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/iot_security.json
+    networks:
+      - iot_monitoring
+
+volumes:
+  elasticsearch_data:
+  grafana_data:
+
+networks:
+  iot_monitoring:
+    driver: bridge

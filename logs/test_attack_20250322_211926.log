@@ -1,0 +1,142 @@
+2025-03-22 21:19:26,788 - TestAttack - INFO - Initializing IoT network...
+2025-03-22 21:19:26,789 - IoTSimulation - INFO - Setting up network with 3 devices
+2025-03-22 21:19:26,790 - IoTSimulation - INFO - Setting up device: camera_01 (SmartCamera)
+2025-03-22 21:19:26,790 - IoTSimulation - INFO - Setting up device: lock_01 (SmartLock)
+2025-03-22 21:19:26,790 - IoTSimulation - INFO - Setting up device: thermostat_01 (SmartThermostat)
+2025-03-22 21:19:26,790 - IoTSimulation - INFO - Network setup completed successfully
+2025-03-22 21:19:26,790 - IoTSimulation - INFO - Starting simulation
+2025-03-22 21:19:26,792 - TestAttack - INFO - Initializing attack simulator...
+2025-03-22 21:19:26,792 - TestAttack - INFO - Letting network stabilize for 10 seconds...
+2025-03-22 21:19:36,799 - TestAttack - INFO - 
+Initial network status:
+2025-03-22 21:19:36,800 - TestAttack - INFO - 
+Launching botnet attack...
+2025-03-22 21:19:36,800 - AttackSimulator - INFO - Launching botnet attack on targets: ['camera_01', 'lock_01']
+2025-03-22 21:19:36,802 - AttackSimulator - INFO - Attack botnet_20250322_211936 launched successfully
+2025-03-22 21:19:36,802 - TestAttack - INFO - 
+Attack Status at 0.0s:
+2025-03-22 21:19:41,808 - TestAttack - INFO - 
+Attack Status at 5.0s:
+2025-03-22 21:19:46,818 - TestAttack - INFO - 
+Attack Status at 10.0s:
+2025-03-22 21:19:51,829 - TestAttack - INFO - 
+Attack Status at 15.0s:
+2025-03-22 21:19:56,837 - TestAttack - INFO - 
+Attack Status at 20.0s:
+2025-03-22 21:20:01,839 - TestAttack - INFO - 
+Attack Status at 25.0s:
+2025-03-22 21:20:06,855 - TestAttack - INFO - 
+Attack Status at 30.1s:
+2025-03-22 21:20:11,857 - TestAttack - INFO - 
+Attack Status at 35.1s:
+2025-03-22 21:20:16,870 - TestAttack - INFO - 
+Attack Status at 40.1s:
+2025-03-22 21:20:21,873 - TestAttack - INFO - 
+Attack Status at 45.1s:
+2025-03-22 21:20:26,877 - TestAttack - INFO - 
+Attack Status at 50.1s:
+2025-03-22 21:20:31,889 - TestAttack - INFO - 
+Attack Status at 55.1s:
+2025-03-22 21:20:36,898 - TestAttack - INFO - 
+Attack Status at 60.1s:
+2025-03-22 21:20:41,900 - TestAttack - INFO - 
+Attack Status at 65.1s:
+2025-03-22 21:20:46,912 - TestAttack - INFO - 
+Attack Status at 70.1s:
+2025-03-22 21:20:51,923 - TestAttack - INFO - 
+Attack Status at 75.1s:
+2025-03-22 21:20:56,933 - TestAttack - INFO - 
+Attack Status at 80.1s:
+2025-03-22 21:21:01,943 - TestAttack - INFO - 
+Attack Status at 85.1s:
+2025-03-22 21:21:06,956 - TestAttack - INFO - 
+Attack Status at 90.2s:
+2025-03-22 21:21:11,958 - TestAttack - INFO - 
+Attack Status at 95.2s:
+2025-03-22 21:21:16,973 - TestAttack - INFO - 
+Attack Status at 100.2s:
+2025-03-22 21:21:21,979 - TestAttack - INFO - 
+Attack Status at 105.2s:
+2025-03-22 21:21:26,996 - TestAttack - INFO - 
+Attack Status at 110.2s:
+2025-03-22 21:21:31,997 - TestAttack - INFO - 
+Attack Status at 115.2s:
+2025-03-22 21:21:37,000 - TestAttack - INFO - 
+Attack Status at 120.2s:
+2025-03-22 21:21:42,015 - TestAttack - INFO - 
+Attack Status at 125.2s:
+2025-03-22 21:21:47,031 - TestAttack - INFO - 
+Attack Status at 130.2s:
+2025-03-22 21:21:52,035 - TestAttack - INFO - 
+Attack Status at 135.2s:
+2025-03-22 21:21:57,049 - TestAttack - INFO - 
+Attack Status at 140.2s:
+2025-03-22 21:22:02,064 - TestAttack - INFO - 
+Attack Status at 145.3s:
+2025-03-22 21:22:07,078 - TestAttack - INFO - 
+Attack Status at 150.3s:
+2025-03-22 21:22:12,093 - TestAttack - INFO - 
+Attack Status at 155.3s:
+2025-03-22 21:22:17,102 - TestAttack - INFO - 
+Attack Status at 160.3s:
+2025-03-22 21:22:22,117 - TestAttack - INFO - 
+Attack Status at 165.3s:
+2025-03-22 21:22:27,122 - TestAttack - INFO - 
+Attack Status at 170.3s:
+2025-03-22 21:22:32,131 - TestAttack - INFO - 
+Attack Status at 175.3s:
+2025-03-22 21:22:37,148 - TestAttack - INFO - 
+Attack Status at 180.3s:
+2025-03-22 21:22:42,158 - TestAttack - INFO - 
+Attack Status at 185.4s:
+2025-03-22 21:22:47,172 - TestAttack - INFO - 
+Attack Status at 190.4s:
+2025-03-22 21:22:52,175 - TestAttack - INFO - 
+Attack Status at 195.4s:
+2025-03-22 21:22:57,182 - TestAttack - INFO - 
+Attack Status at 200.4s:
+2025-03-22 21:23:02,188 - TestAttack - INFO - 
+Attack Status at 205.4s:
+2025-03-22 21:23:07,202 - TestAttack - INFO - 
+Attack Status at 210.4s:
+2025-03-22 21:23:12,210 - TestAttack - INFO - 
+Attack Status at 215.4s:
+2025-03-22 21:23:17,215 - TestAttack - INFO - 
+Attack Status at 220.4s:
+2025-03-22 21:23:22,216 - TestAttack - INFO - 
+Attack Status at 225.4s:
+2025-03-22 21:23:27,221 - TestAttack - INFO - 
+Attack Status at 230.4s:
+2025-03-22 21:23:32,228 - TestAttack - INFO - 
+Attack Status at 235.4s:
+2025-03-22 21:23:37,234 - TestAttack - INFO - 
+Attack Status at 240.4s:
+2025-03-22 21:23:42,241 - TestAttack - INFO - 
+Attack Status at 245.4s:
+2025-03-22 21:23:47,254 - TestAttack - INFO - 
+Attack Status at 250.5s:
+2025-03-22 21:23:52,265 - TestAttack - INFO - 
+Attack Status at 255.5s:
+2025-03-22 21:23:57,267 - TestAttack - INFO - 
+Attack Status at 260.5s:
+2025-03-22 21:24:02,272 - TestAttack - INFO - 
+Attack Status at 265.5s:
+2025-03-22 21:24:07,288 - TestAttack - INFO - 
+Attack Status at 270.5s:
+2025-03-22 21:24:12,291 - TestAttack - INFO - 
+Attack Status at 275.5s:
+2025-03-22 21:24:17,301 - TestAttack - INFO - 
+Attack Status at 280.5s:
+2025-03-22 21:24:22,315 - TestAttack - INFO - 
+Attack Status at 285.5s:
+2025-03-22 21:24:27,325 - TestAttack - INFO - 
+Attack Status at 290.5s:
+2025-03-22 21:24:32,331 - TestAttack - INFO - 
+Attack Status at 295.5s:
+2025-03-22 21:24:37,336 - TestAttack - INFO - 
+Attack completed. Monitoring network recovery...
+2025-03-22 21:24:37,686 - AttackSimulator - INFO - Attack botnet_20250322_211936 stopped successfully
+2025-03-22 21:24:47,338 - TestAttack - INFO - 
+Final network status:
+2025-03-22 21:24:47,338 - IoTSimulation - INFO - Stopping simulation
+2025-03-22 21:24:47,913 - TestAttack - INFO - Test completed

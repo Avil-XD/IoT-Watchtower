@@ -1,0 +1,7 @@
+2025-03-22 20:53:04,795 - IoTSimulation - INFO - Setting up network with 3 devices
+2025-03-22 20:53:04,796 - IoTSimulation - INFO - Setting up device: camera_01 (SmartCamera)
+2025-03-22 20:53:04,796 - IoTSimulation - INFO - Setting up device: lock_01 (SmartLock)
+2025-03-22 20:53:04,796 - IoTSimulation - INFO - Setting up device: thermostat_01 (SmartThermostat)
+2025-03-22 20:53:04,796 - IoTSimulation - INFO - Network setup completed successfully
+2025-03-22 20:53:04,796 - IoTSimulation - INFO - Starting simulation
+2025-03-22 21:53:07,157 - IoTSimulation - INFO - Stopping simulation

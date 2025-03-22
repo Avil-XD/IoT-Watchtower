@@ -14,7 +14,11 @@ class AttackDetector:
         self.scaler = None
         self.load_latest_model()
         self.detection_history = []
-        self.alert_threshold = 0.8  # Confidence threshold for alerts
+        
+        # Detection thresholds
+        self.normal_threshold = 0.6    # Threshold for normal behavior
+        self.attack_threshold = 0.4    # Threshold for attack detection
+        self.alert_threshold = 0.6     # Confidence threshold for alerts
 
     def _setup_logging(self):
         """Configure detector-specific logging."""
@@ -93,18 +97,35 @@ class AttackDetector:
             features_scaled = self.scaler.transform(features)
             
             # Get prediction and probabilities
-            prediction = self.model.predict(features_scaled)[0]
             probabilities = self.model.predict_proba(features_scaled)[0]
-            confidence = max(probabilities)
+            
+            # Get attack type with highest probability
+            class_idx = np.argmax(probabilities)
+            attack_type = self.model.classes_[class_idx]
+            confidence = probabilities[class_idx]
+            
+            # Determine if this is an attack based on thresholds
+            is_attack = False
+            if attack_type != "normal" and confidence > self.attack_threshold:
+                is_attack = True
+            elif attack_type == "normal" and confidence < self.normal_threshold:
+                # High uncertainty in normal behavior might indicate an attack
+                is_attack = True
+                # Find the most likely attack type
+                attack_probs = [(cls, prob) for cls, prob in zip(self.model.classes_, probabilities)
+                              if cls != "normal"]
+                if attack_probs:
+                    attack_type = max(attack_probs, key=lambda x: x[1])[0]
             
             # Create detection result
             result = {
                 "timestamp": datetime.now().isoformat(),
-                "detected_type": prediction,
+                "detected_type": attack_type,
+                "is_attack": is_attack,
                 "confidence": float(confidence),
                 "alert_triggered": confidence >= self.alert_threshold,
                 "probabilities": {
-                    class_name: float(prob)
+                    str(class_name): float(prob)
                     for class_name, prob in zip(self.model.classes_, probabilities)
                 }
             }
@@ -115,7 +136,7 @@ class AttackDetector:
             # Log if alert threshold exceeded
             if result["alert_triggered"]:
                 self.logger.warning(
-                    f"Attack detected: {prediction} "
+                    f"Attack detected: {attack_type} "
                     f"(confidence: {confidence:.3f})"
                 )
             
@@ -142,34 +163,42 @@ class AttackDetector:
         if not recent_detections:
             return {"status": "no_recent_data"}
         
-        # Count attack types
+        # Count attack types and alerts
         attack_counts = {}
         alert_count = 0
+        attack_count = 0
         
         for detection in recent_detections:
             attack_type = detection["detected_type"]
-            attack_counts[attack_type] = attack_counts.get(attack_type, 0) + 1
+            if attack_type not in attack_counts:
+                attack_counts[attack_type] = {
+                    "count": 0,
+                    "alerts": 0,
+                    "total_confidence": 0.0
+                }
+            
+            stats = attack_counts[attack_type]
+            stats["count"] += 1
+            stats["total_confidence"] += detection["confidence"]
+            
             if detection["alert_triggered"]:
+                stats["alerts"] += 1
                 alert_count += 1
+            
+            if detection["is_attack"]:
+                attack_count += 1
         
-        # Calculate average confidence per attack type
-        attack_confidence = {}
-        for detection in recent_detections:
-            attack_type = detection["detected_type"]
-            if attack_type not in attack_confidence:
-                attack_confidence[attack_type] = []
-            attack_confidence[attack_type].append(detection["confidence"])
-        
-        for attack_type in attack_confidence:
-            attack_confidence[attack_type] = np.mean(attack_confidence[attack_type])
+        # Calculate averages
+        for attack_type, stats in attack_counts.items():
+            stats["avg_confidence"] = stats["total_confidence"] / stats["count"]
         
         return {
             "status": "success",
             "window_seconds": window_seconds,
             "total_detections": len(recent_detections),
+            "attack_detections": attack_count,
             "alert_count": alert_count,
-            "attack_counts": attack_counts,
-            "attack_confidence": attack_confidence,
+            "attack_stats": attack_counts,
             "latest_detection": recent_detections[-1]
         }
 
@@ -181,32 +210,3 @@ class AttackDetector:
         """Clear detection history."""
         self.detection_history = []
         self.logger.info("Detection history cleared")
-
-if __name__ == "__main__":
-    # Test the detector
-    detector = AttackDetector()
-    
-    # Example network status for testing
-    test_status = {
-        "metrics": {
-            "total_bandwidth": 150.0,
-            "latency": 50,
-            "packet_loss_rate": 0.01,
-            "error_rate": 0.002
-        },
-        "devices": [
-            {
-                "metrics": {
-                    "cpu_usage": 75.0,
-                    "memory_usage": 60.0,
-                    "bandwidth_usage": 45.0,
-                    "packet_count": 1000,
-                    "error_count": 5
-                }
-            }
-        ]
-    }
-    
-    # Test detection
-    result = detector.detect(test_status)
-    print(f"Detection result: {json.dumps(result, indent=2)}")

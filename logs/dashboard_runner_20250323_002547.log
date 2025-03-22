@@ -1,0 +1,4 @@
+2025-03-23 00:25:47,235 - DashboardRunner - INFO - Starting IoT network monitoring dashboard
+2025-03-23 00:25:48,221 - AttackDetector - ERROR - Failed to load model: No module named 'numpy._core'
+2025-03-23 00:25:48,221 - DashboardRunner - ERROR - Dashboard startup failed: No module named 'numpy._core'
+2025-03-23 00:25:48,221 - DashboardRunner - INFO - Stopping simulation...

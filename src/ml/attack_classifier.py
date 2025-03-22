@@ -1,23 +1,22 @@
-import logging
-from pathlib import Path
-from datetime import datetime
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
-from typing import Dict, List, Tuple, Any
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
+import logging
+from pathlib import Path
+from typing import Dict, List, Tuple
 import joblib
+import json
 
 class AttackClassifier:
     def __init__(self, event_collector=None):
-        """Initialize the attack classifier with optional event collector."""
+        """Initialize the attack classifier."""
         self._setup_logging()
-        self.model = None
-        self.scaler = StandardScaler()
         self.event_collector = event_collector
-        self.feature_columns = [
-            'cpu_usage', 'memory_usage', 'bandwidth_usage',
-            'packet_count', 'error_count', 'error_rate'
-        ]
+        self.training_data = []
+        self.model = None
+        self.scaler = None
 
     def _setup_logging(self):
         """Configure classifier-specific logging."""
@@ -37,199 +36,162 @@ class AttackClassifier:
         )
         self.logger = logging.getLogger("AttackClassifier")
 
-    def extract_features(self, network_status: Dict[str, Any]) -> np.ndarray:
-        """Extract relevant features from network status."""
-        features = []
-        
+    def _extract_features(self, network_status: Dict) -> List[float]:
+        """Extract features from network status."""
         # Network-level features
-        features.extend([
-            network_status['metrics']['total_bandwidth'],
-            network_status['metrics']['error_rate']
-        ])
+        network_metrics = [
+            network_status["metrics"]["total_bandwidth"],
+            network_status["metrics"]["latency"],
+            network_status["metrics"]["packet_loss_rate"],
+            network_status["metrics"]["error_rate"]
+        ]
         
         # Device-level features
-        for device in network_status['devices']:
-            features.extend([
-                device['metrics']['cpu_usage'],
-                device['metrics']['memory_usage'],
-                device['metrics']['bandwidth_usage'],
-                device['metrics']['error_count']
+        device_metrics = []
+        device_ratios = []
+        for device in network_status["devices"]:
+            metrics = device["metrics"]
+            device_metrics.extend([
+                metrics["cpu_usage"],
+                metrics["memory_usage"],
+                metrics["bandwidth_usage"],
+                metrics["packet_count"],
+                metrics["error_count"]
             ])
             
-        return np.array(features).reshape(1, -1)
-
-    def collect_training_data(self, network_status: Dict[str, Any], 
-                            attack_status: Dict[str, Any]) -> None:
-        """Collect training data from current network and attack status."""
-        if self.event_collector:
-            features = self.extract_features(network_status)
+            # Calculate performance ratios
+            if metrics["packet_count"] > 0:
+                error_rate = metrics["error_count"] / metrics["packet_count"]
+                device_ratios.append(error_rate)
             
-            training_data = {
-                "features": features.tolist(),
-                "attack_type": attack_status.get("type", "normal"),
-                "attack_phase": attack_status.get("status", "none"),
-                "network_metrics": network_status["metrics"],
-                "device_metrics": {
-                    device["id"]: device["metrics"] 
-                    for device in network_status["devices"]
-                }
-            }
+            if metrics["bandwidth_usage"] > 0:
+                packet_density = metrics["packet_count"] / metrics["bandwidth_usage"]
+                device_ratios.append(packet_density)
             
-            self.event_collector.collect_event(
-                event_type="training_data",
-                data=training_data
-            )
-
-    def prepare_training_data(self) -> Tuple[np.ndarray, np.ndarray]:
-        """Prepare collected data for training."""
-        if not self.event_collector:
-            raise ValueError("Event collector not configured")
-            
-        training_events = self.event_collector.get_events("training_data")
+            resource_usage = (metrics["cpu_usage"] + metrics["memory_usage"]) / 2
+            device_ratios.append(resource_usage)
         
-        X, y = [], []
-        for event in training_events:
-            X.append(event["details"]["features"][0])  # First row of features
-            y.append(event["details"]["attack_type"])
-            
-        return np.array(X), np.array(y)
+        return network_metrics + device_metrics + device_ratios
 
-    def train(self) -> None:
-        """Train the classifier on collected data."""
-        try:
-            X, y = self.prepare_training_data()
-            
-            if len(X) == 0:
-                raise ValueError("No training data available")
-            
-            # Scale features
-            X_scaled = self.scaler.fit_transform(X)
-            
-            # Initialize and train model
-            self.model = RandomForestClassifier(
-                n_estimators=100,
-                max_depth=10,
-                random_state=42
-            )
-            self.model.fit(X_scaled, y)
-            
-            self.logger.info(f"Model trained on {len(X)} samples")
-            
-            # Save model and scaler
-            self._save_model()
-            
-        except Exception as e:
-            self.logger.error(f"Training failed: {str(e)}")
-            raise
-
-    def predict(self, network_status: Dict[str, Any]) -> Dict[str, Any]:
-        """Predict attack type from current network status."""
-        try:
-            if self.model is None:
-                self._load_model()
-                
-            features = self.extract_features(network_status)
-            features_scaled = self.scaler.transform(features)
-            
-            prediction = self.model.predict(features_scaled)[0]
-            probabilities = self.model.predict_proba(features_scaled)[0]
-            
-            result = {
-                "predicted_type": prediction,
-                "confidence": float(max(probabilities)),
-                "probabilities": {
-                    class_name: float(prob)
-                    for class_name, prob in zip(self.model.classes_, probabilities)
+    def collect_training_data(self, network_status: Dict, attack_status: Dict):
+        """Collect network status data for training."""
+        features = self._extract_features(network_status)
+        
+        training_sample = {
+            "features": features,
+            "label": attack_status["type"]
+        }
+        
+        self.training_data.append(training_sample)
+        
+        if self.event_collector:
+            self.event_collector.record_event(
+                event_type="training_data",
+                details={
+                    "network_metrics": network_status["metrics"],
+                    "device_metrics": {
+                        d["id"]: d["metrics"]
+                        for d in network_status["devices"]
+                    },
+                    "attack_type": attack_status["type"]
                 }
+            )
+
+    def train(self):
+        """Train the classifier on collected data."""
+        if not self.training_data:
+            raise ValueError("No training data available")
+        
+        # Prepare training data
+        X = np.array([sample["features"] for sample in self.training_data])
+        y = np.array([sample["label"] for sample in self.training_data])
+        
+        # Split data
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, random_state=42, stratify=y
+        )
+        
+        # Scale features
+        self.scaler = StandardScaler()
+        X_train_scaled = self.scaler.fit_transform(X_train)
+        X_test_scaled = self.scaler.transform(X_test)
+        
+        # Calculate class weights
+        unique_classes = np.unique(y_train)
+        class_counts = np.bincount([np.where(unique_classes == c)[0][0] for c in y_train])
+        total_samples = len(y_train)
+        class_weights = {
+            cls: (total_samples / (len(unique_classes) * count))
+            for cls, count in zip(unique_classes, class_counts)
+        }
+        
+        # Initialize and train model
+        self.model = RandomForestClassifier(
+            n_estimators=200,
+            max_depth=15,
+            min_samples_split=5,
+            min_samples_leaf=2,
+            class_weight=class_weights,
+            random_state=42
+        )
+        
+        self.model.fit(X_train_scaled, y_train)
+        
+        # Evaluate model
+        y_pred = self.model.predict(X_test_scaled)
+        self.logger.info("\nModel Performance:")
+        self.logger.info("\n" + classification_report(y_test, y_pred))
+        
+        # Save model
+        self._save_model()
+
+    def predict(self, network_status: Dict) -> Dict:
+        """Predict attack probability for current network status."""
+        if not self.model or not self.scaler:
+            raise RuntimeError("Model not trained")
+        
+        features = self._extract_features(network_status)
+        features_scaled = self.scaler.transform(np.array(features).reshape(1, -1))
+        
+        prediction = self.model.predict(features_scaled)[0]
+        probabilities = self.model.predict_proba(features_scaled)[0]
+        
+        return {
+            "prediction": prediction,
+            "confidence": float(max(probabilities)),
+            "probabilities": {
+                str(cls): float(prob)
+                for cls, prob in zip(self.model.classes_, probabilities)
             }
-            
-            if self.event_collector:
-                self.event_collector.collect_event(
-                    event_type="ml_prediction",
-                    data=result
-                )
-            
-            return result
-            
-        except Exception as e:
-            self.logger.error(f"Prediction failed: {str(e)}")
-            raise
+        }
 
-    def _save_model(self) -> None:
-        """Save trained model and scaler to disk."""
-        try:
-            models_dir = Path("models")
-            models_dir.mkdir(exist_ok=True)
-            
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            
-            # Save model
-            model_path = models_dir / f"attack_classifier_{timestamp}.joblib"
-            joblib.dump(self.model, model_path)
-            
-            # Save scaler
-            scaler_path = models_dir / f"feature_scaler_{timestamp}.joblib"
-            joblib.dump(self.scaler, scaler_path)
-            
-            self.logger.info(f"Model and scaler saved to {models_dir}")
-            
-        except Exception as e:
-            self.logger.error(f"Failed to save model: {str(e)}")
-            raise
+    def _save_model(self):
+        """Save trained model and scaler."""
+        models_dir = Path("models")
+        models_dir.mkdir(exist_ok=True)
+        
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        # Save model
+        model_path = models_dir / f"attack_classifier_{timestamp}.joblib"
+        joblib.dump(self.model, model_path)
+        
+        # Save scaler
+        scaler_path = models_dir / f"feature_scaler_{timestamp}.joblib"
+        joblib.dump(self.scaler, scaler_path)
+        
+        self.logger.info(f"Model saved to {model_path}")
+        self.logger.info(f"Scaler saved to {scaler_path}")
 
-    def _load_model(self) -> None:
-        """Load latest model and scaler from disk."""
-        try:
-            models_dir = Path("models")
-            if not models_dir.exists():
-                raise FileNotFoundError("No models directory found")
-            
-            # Get latest model file
-            model_files = list(models_dir.glob("attack_classifier_*.joblib"))
-            if not model_files:
-                raise FileNotFoundError("No model files found")
-            
-            latest_model = max(model_files, key=lambda x: x.stat().st_mtime)
-            self.model = joblib.load(latest_model)
-            
-            # Get latest scaler file
-            scaler_files = list(models_dir.glob("feature_scaler_*.joblib"))
-            if not scaler_files:
-                raise FileNotFoundError("No scaler files found")
-            
-            latest_scaler = max(scaler_files, key=lambda x: x.stat().st_mtime)
-            self.scaler = joblib.load(latest_scaler)
-            
-            self.logger.info(f"Loaded model from {latest_model}")
-            
-        except Exception as e:
-            self.logger.error(f"Failed to load model: {str(e)}")
-            raise
+    def load_model(self, model_path: Path, scaler_path: Path):
+        """Load trained model and scaler."""
+        self.model = joblib.load(model_path)
+        self.scaler = joblib.load(scaler_path)
+        self.logger.info(f"Model loaded from {model_path}")
+        self.logger.info(f"Scaler loaded from {scaler_path}")
 
 if __name__ == "__main__":
-    # Test classifier
-    from data.event_collector import EventCollector
-    
-    collector = EventCollector()
-    classifier = AttackClassifier(collector)
-    
-    # Example network status for testing
-    test_status = {
-        "metrics": {
-            "total_bandwidth": 100.0,
-            "error_rate": 0.001
-        },
-        "devices": [
-            {
-                "metrics": {
-                    "cpu_usage": 50.0,
-                    "memory_usage": 60.0,
-                    "bandwidth_usage": 30.0,
-                    "error_count": 2
-                }
-            }
-        ]
-    }
-    
-    features = classifier.extract_features(test_status)
-    print(f"Extracted features shape: {features.shape}")
+    # For testing
+    from datetime import datetime
+    classifier = AttackClassifier()
+    print("Classifier initialized")

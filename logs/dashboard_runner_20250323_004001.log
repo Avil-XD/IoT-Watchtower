@@ -1,0 +1,82 @@
+2025-03-23 00:40:01,363 - DashboardRunner - INFO - Starting IoT network monitoring dashboard
+2025-03-23 00:40:02,395 - AttackDetector - INFO - Loaded model from models\attack_classifier_20250323_002700.joblib
+2025-03-23 00:40:02,395 - AttackDetector - INFO - Loaded scaler from models\feature_scaler_20250323_002700.joblib
+2025-03-23 00:40:02,397 - IoTSimulation - INFO - Setting up network with 3 devices
+2025-03-23 00:40:02,397 - IoTSimulation - INFO - Setting up device: camera_01 (SmartCamera)
+2025-03-23 00:40:02,397 - IoTSimulation - INFO - Setting up device: lock_01 (SmartLock)
+2025-03-23 00:40:02,397 - IoTSimulation - INFO - Setting up device: thermostat_01 (SmartThermostat)
+2025-03-23 00:40:02,407 - IoTSimulation - INFO - Network setup completed successfully
+2025-03-23 00:40:02,407 - IoTSimulation - INFO - Starting simulation
+2025-03-23 00:40:02,410 - Dashboard - INFO - Starting dashboard server on localhost:8050
+2025-03-23 00:40:02,412 - dash.dash - INFO - Dash is running on http://localhost:8050/
+
+2025-03-23 00:40:02,422 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-23 00:40:02,423 - DashboardRunner - WARNING - Alert! normal detected with 1.000 confidence
+2025-03-23 00:40:07,436 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-23 00:40:07,436 - DashboardRunner - WARNING - Alert! normal detected with 1.000 confidence
+2025-03-23 00:40:12,456 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.986)
+2025-03-23 00:40:12,456 - DashboardRunner - WARNING - Alert! normal detected with 0.986 confidence
+2025-03-23 00:40:17,476 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-23 00:40:17,476 - DashboardRunner - WARNING - Alert! normal detected with 1.000 confidence
+2025-03-23 00:40:22,492 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-23 00:40:22,492 - DashboardRunner - WARNING - Alert! normal detected with 1.000 confidence
+2025-03-23 00:40:27,504 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-23 00:40:27,505 - DashboardRunner - WARNING - Alert! normal detected with 1.000 confidence
+2025-03-23 00:40:32,528 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.998)
+2025-03-23 00:40:32,528 - DashboardRunner - WARNING - Alert! normal detected with 0.998 confidence
+2025-03-23 00:40:37,553 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.998)
+2025-03-23 00:40:37,553 - DashboardRunner - WARNING - Alert! normal detected with 0.998 confidence
+2025-03-23 00:40:42,578 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-23 00:40:42,578 - DashboardRunner - WARNING - Alert! normal detected with 1.000 confidence
+2025-03-23 00:40:47,603 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.996)
+2025-03-23 00:40:47,604 - DashboardRunner - WARNING - Alert! normal detected with 0.996 confidence
+2025-03-23 00:40:52,625 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-23 00:40:52,626 - DashboardRunner - WARNING - Alert! normal detected with 1.000 confidence
+2025-03-23 00:40:57,647 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.991)
+2025-03-23 00:40:57,647 - DashboardRunner - WARNING - Alert! normal detected with 0.991 confidence
+2025-03-23 00:41:02,666 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.997)
+2025-03-23 00:41:02,666 - DashboardRunner - WARNING - Alert! normal detected with 0.997 confidence
+2025-03-23 00:41:07,691 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-23 00:41:07,691 - DashboardRunner - WARNING - Alert! normal detected with 1.000 confidence
+2025-03-23 00:41:12,712 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.985)
+2025-03-23 00:41:12,713 - DashboardRunner - WARNING - Alert! normal detected with 0.985 confidence
+2025-03-23 00:41:17,737 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.994)
+2025-03-23 00:41:17,738 - DashboardRunner - WARNING - Alert! normal detected with 0.994 confidence
+2025-03-23 00:41:22,753 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.989)
+2025-03-23 00:41:22,753 - DashboardRunner - WARNING - Alert! normal detected with 0.989 confidence
+2025-03-23 00:41:27,767 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-23 00:41:27,767 - DashboardRunner - WARNING - Alert! normal detected with 1.000 confidence
+2025-03-23 00:41:32,779 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-23 00:41:32,780 - DashboardRunner - WARNING - Alert! normal detected with 1.000 confidence
+2025-03-23 00:41:37,801 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-23 00:41:37,801 - DashboardRunner - WARNING - Alert! normal detected with 1.000 confidence
+2025-03-23 00:41:42,822 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-23 00:41:42,823 - DashboardRunner - WARNING - Alert! normal detected with 1.000 confidence
+2025-03-23 00:41:47,843 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.983)
+2025-03-23 00:41:47,844 - DashboardRunner - WARNING - Alert! normal detected with 0.983 confidence
+2025-03-23 00:41:52,860 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-23 00:41:52,861 - DashboardRunner - WARNING - Alert! normal detected with 1.000 confidence
+2025-03-23 00:41:57,871 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.993)
+2025-03-23 00:41:57,871 - DashboardRunner - WARNING - Alert! normal detected with 0.993 confidence
+2025-03-23 00:42:02,891 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.993)
+2025-03-23 00:42:02,892 - DashboardRunner - WARNING - Alert! normal detected with 0.993 confidence
+2025-03-23 00:42:07,904 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-23 00:42:07,904 - DashboardRunner - WARNING - Alert! normal detected with 1.000 confidence
+2025-03-23 00:42:12,915 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-23 00:42:12,915 - DashboardRunner - WARNING - Alert! normal detected with 1.000 confidence
+2025-03-23 00:42:17,937 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-23 00:42:17,938 - DashboardRunner - WARNING - Alert! normal detected with 1.000 confidence
+2025-03-23 00:42:22,953 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-23 00:42:22,953 - DashboardRunner - WARNING - Alert! normal detected with 1.000 confidence
+2025-03-23 00:42:27,974 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-23 00:42:27,974 - DashboardRunner - WARNING - Alert! normal detected with 1.000 confidence
+2025-03-23 00:42:33,001 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.995)
+2025-03-23 00:42:33,001 - DashboardRunner - WARNING - Alert! normal detected with 0.995 confidence
+2025-03-23 00:42:38,016 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-23 00:42:38,016 - DashboardRunner - WARNING - Alert! normal detected with 1.000 confidence
+2025-03-23 00:42:43,042 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-23 00:42:43,042 - DashboardRunner - WARNING - Alert! normal detected with 1.000 confidence
+2025-03-23 00:42:48,067 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-23 00:42:48,068 - DashboardRunner - WARNING - Alert! normal detected with 1.000 confidence
+2025-03-23 00:42:52,312 - DashboardRunner - INFO - Stopping simulation...
+2025-03-23 00:42:52,313 - IoTSimulation - INFO - Stopping simulation

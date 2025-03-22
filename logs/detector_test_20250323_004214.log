@@ -1,0 +1,72 @@
+2025-03-23 00:42:14,140 - DetectorTest - INFO - Initializing components...
+2025-03-23 00:42:15,295 - AttackDetector - INFO - Loaded model from models\attack_classifier_20250323_002700.joblib
+2025-03-23 00:42:15,295 - AttackDetector - INFO - Loaded scaler from models\feature_scaler_20250323_002700.joblib
+2025-03-23 00:42:15,296 - IoTSimulation - INFO - Setting up network with 3 devices
+2025-03-23 00:42:15,296 - IoTSimulation - INFO - Setting up device: camera_01 (SmartCamera)
+2025-03-23 00:42:15,296 - IoTSimulation - INFO - Setting up device: lock_01 (SmartLock)
+2025-03-23 00:42:15,296 - IoTSimulation - INFO - Setting up device: thermostat_01 (SmartThermostat)
+2025-03-23 00:42:15,296 - IoTSimulation - INFO - Network setup completed successfully
+2025-03-23 00:42:15,296 - IoTSimulation - INFO - Starting simulation
+2025-03-23 00:42:15,299 - DetectorTest - INFO - Monitoring normal network behavior...
+2025-03-23 00:42:15,308 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-23 00:42:15,309 - DetectorTest - INFO - State Change: normal behavior (confidence: 1.000)
+2025-03-23 00:42:15,309 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-23 00:42:15,310 - DetectorTest - INFO -   Total Detections: 1
+2025-03-23 00:42:15,310 - DetectorTest - INFO -   Attack Detections: 0
+2025-03-23 00:42:15,310 - DetectorTest - INFO -   Alerts Triggered: 1
+2025-03-23 00:42:15,310 - DetectorTest - INFO -   normal: 1 detections, 1 alerts (avg conf: 1.000)
+2025-03-23 00:42:20,336 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.852)
+2025-03-23 00:42:20,337 - DetectorTest - INFO - State Change: normal behavior (confidence: 0.852)
+2025-03-23 00:42:20,337 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-23 00:42:20,337 - DetectorTest - INFO -   Total Detections: 2
+2025-03-23 00:42:20,337 - DetectorTest - INFO -   Attack Detections: 0
+2025-03-23 00:42:20,337 - DetectorTest - INFO -   Alerts Triggered: 2
+2025-03-23 00:42:20,338 - DetectorTest - INFO -   normal: 2 detections, 2 alerts (avg conf: 0.926)
+2025-03-23 00:42:25,353 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.847)
+2025-03-23 00:42:25,353 - DetectorTest - INFO - State Change: normal behavior (confidence: 0.847)
+2025-03-23 00:42:25,354 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-23 00:42:25,354 - DetectorTest - INFO -   Total Detections: 3
+2025-03-23 00:42:25,354 - DetectorTest - INFO -   Attack Detections: 0
+2025-03-23 00:42:25,354 - DetectorTest - INFO -   Alerts Triggered: 3
+2025-03-23 00:42:25,354 - DetectorTest - INFO -   normal: 3 detections, 3 alerts (avg conf: 0.900)
+2025-03-23 00:42:30,364 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.862)
+2025-03-23 00:42:30,365 - DetectorTest - INFO - State Change: normal behavior (confidence: 0.862)
+2025-03-23 00:42:30,365 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-23 00:42:30,365 - DetectorTest - INFO -   Total Detections: 4
+2025-03-23 00:42:30,365 - DetectorTest - INFO -   Attack Detections: 0
+2025-03-23 00:42:30,366 - DetectorTest - INFO -   Alerts Triggered: 4
+2025-03-23 00:42:30,366 - DetectorTest - INFO -   normal: 4 detections, 4 alerts (avg conf: 0.890)
+2025-03-23 00:42:35,383 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.849)
+2025-03-23 00:42:35,383 - DetectorTest - INFO - State Change: normal behavior (confidence: 0.849)
+2025-03-23 00:42:35,383 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-23 00:42:35,383 - DetectorTest - INFO -   Total Detections: 5
+2025-03-23 00:42:35,383 - DetectorTest - INFO -   Attack Detections: 0
+2025-03-23 00:42:35,383 - DetectorTest - INFO -   Alerts Triggered: 5
+2025-03-23 00:42:35,383 - DetectorTest - INFO -   normal: 5 detections, 5 alerts (avg conf: 0.882)
+2025-03-23 00:42:40,407 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.997)
+2025-03-23 00:42:40,407 - DetectorTest - INFO - State Change: normal behavior (confidence: 0.997)
+2025-03-23 00:42:40,408 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-23 00:42:40,408 - DetectorTest - INFO -   Total Detections: 6
+2025-03-23 00:42:40,408 - DetectorTest - INFO -   Attack Detections: 0
+2025-03-23 00:42:40,408 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-23 00:42:40,408 - DetectorTest - INFO -   normal: 6 detections, 6 alerts (avg conf: 0.901)
+2025-03-23 00:42:45,413 - DetectorTest - INFO - 
+Simulating botnet attack...
+2025-03-23 00:42:45,413 - AttackSimulator - INFO - Creating botnet attack targeting ['camera_01', 'lock_01']
+2025-03-23 00:42:45,414 - AttackSimulator - INFO - Attack botnet_20250323_004245 created
+2025-03-23 00:42:45,414 - AttackSimulator - INFO - Launching botnet attack on targets: ['camera_01', 'lock_01']
+2025-03-23 00:42:45,414 - AttackSimulator - INFO - Attack 7b388675-5042-42b8-9d63-ae1325437336 launched successfully
+2025-03-23 00:42:45,424 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.966)
+2025-03-23 00:42:45,424 - DetectorTest - INFO - State Change: normal behavior (confidence: 0.966)
+2025-03-23 00:42:45,424 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-23 00:42:45,424 - DetectorTest - INFO -   Total Detections: 6
+2025-03-23 00:42:45,424 - DetectorTest - INFO -   Attack Detections: 0
+2025-03-23 00:42:45,425 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-23 00:42:45,425 - DetectorTest - INFO -   normal: 6 detections, 6 alerts (avg conf: 0.896)
+2025-03-23 00:42:50,445 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.852)
+2025-03-23 00:42:50,445 - DetectorTest - INFO - State Change: normal behavior (confidence: 0.852)
+2025-03-23 00:42:50,445 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-23 00:42:50,445 - DetectorTest - INFO -   Total Detections: 6
+2025-03-23 00:42:50,446 - DetectorTest - INFO -   Attack Detections: 0
+2025-03-23 00:42:50,446 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-23 00:42:50,446 - DetectorTest - INFO -   normal: 6 detections, 6 alerts (avg conf: 0.896)

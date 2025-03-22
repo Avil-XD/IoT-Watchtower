@@ -1,0 +1,212 @@
+2025-03-22 23:09:49,706 - DetectorTest - INFO - Initializing components...
+2025-03-22 23:09:50,887 - AttackDetector - INFO - Loaded model from models\attack_classifier_20250322_230929.joblib
+2025-03-22 23:09:50,887 - AttackDetector - INFO - Loaded scaler from models\feature_scaler_20250322_230929.joblib
+2025-03-22 23:09:50,888 - IoTSimulation - INFO - Setting up network with 3 devices
+2025-03-22 23:09:50,888 - IoTSimulation - INFO - Setting up device: camera_01 (SmartCamera)
+2025-03-22 23:09:50,888 - IoTSimulation - INFO - Setting up device: lock_01 (SmartLock)
+2025-03-22 23:09:50,888 - IoTSimulation - INFO - Setting up device: thermostat_01 (SmartThermostat)
+2025-03-22 23:09:50,888 - IoTSimulation - INFO - Network setup completed successfully
+2025-03-22 23:09:50,888 - IoTSimulation - INFO - Starting simulation
+2025-03-22 23:09:50,891 - DetectorTest - INFO - Monitoring normal network behavior...
+2025-03-22 23:09:50,909 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-22 23:09:50,909 - DetectorTest - WARNING - Alert! normal attack detected with 1.000 confidence
+2025-03-22 23:09:50,910 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:09:50,910 - DetectorTest - INFO -   Total Detections: 1
+2025-03-22 23:09:50,910 - DetectorTest - INFO -   Alerts Triggered: 1
+2025-03-22 23:09:50,910 - DetectorTest - INFO -   normal: 1 detections (avg confidence: 1.000)
+2025-03-22 23:09:55,950 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-22 23:09:55,950 - DetectorTest - WARNING - Alert! normal attack detected with 1.000 confidence
+2025-03-22 23:09:55,950 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:09:55,950 - DetectorTest - INFO -   Total Detections: 2
+2025-03-22 23:09:55,951 - DetectorTest - INFO -   Alerts Triggered: 2
+2025-03-22 23:09:55,951 - DetectorTest - INFO -   normal: 2 detections (avg confidence: 1.000)
+2025-03-22 23:10:00,982 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-22 23:10:00,982 - DetectorTest - WARNING - Alert! normal attack detected with 1.000 confidence
+2025-03-22 23:10:00,983 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:10:00,983 - DetectorTest - INFO -   Total Detections: 3
+2025-03-22 23:10:00,983 - DetectorTest - INFO -   Alerts Triggered: 3
+2025-03-22 23:10:00,983 - DetectorTest - INFO -   normal: 3 detections (avg confidence: 1.000)
+2025-03-22 23:10:06,005 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-22 23:10:06,006 - DetectorTest - WARNING - Alert! normal attack detected with 1.000 confidence
+2025-03-22 23:10:06,006 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:10:06,006 - DetectorTest - INFO -   Total Detections: 4
+2025-03-22 23:10:06,006 - DetectorTest - INFO -   Alerts Triggered: 4
+2025-03-22 23:10:06,006 - DetectorTest - INFO -   normal: 4 detections (avg confidence: 1.000)
+2025-03-22 23:10:11,035 - AttackDetector - WARNING - Attack detected: normal (confidence: 1.000)
+2025-03-22 23:10:11,035 - DetectorTest - WARNING - Alert! normal attack detected with 1.000 confidence
+2025-03-22 23:10:11,036 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:10:11,037 - DetectorTest - INFO -   Total Detections: 5
+2025-03-22 23:10:11,037 - DetectorTest - INFO -   Alerts Triggered: 5
+2025-03-22 23:10:11,037 - DetectorTest - INFO -   normal: 5 detections (avg confidence: 1.000)
+2025-03-22 23:10:16,063 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.987)
+2025-03-22 23:10:16,063 - DetectorTest - WARNING - Alert! normal attack detected with 0.987 confidence
+2025-03-22 23:10:16,064 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:10:16,064 - DetectorTest - INFO -   Total Detections: 6
+2025-03-22 23:10:16,064 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-22 23:10:16,064 - DetectorTest - INFO -   normal: 6 detections (avg confidence: 0.998)
+2025-03-22 23:10:21,078 - DetectorTest - INFO - 
+Simulating botnet attack...
+2025-03-22 23:10:21,078 - AttackSimulator - INFO - Creating botnet attack targeting ['camera_01', 'lock_01']
+2025-03-22 23:10:21,079 - AttackSimulator - INFO - Attack botnet_20250322_231021 created
+2025-03-22 23:10:21,079 - AttackSimulator - INFO - Launching botnet attack on targets: ['camera_01', 'lock_01']
+2025-03-22 23:10:21,079 - AttackSimulator - INFO - Attack f5629bc2-13cd-4851-bdb0-a751073edc4f launched successfully
+2025-03-22 23:10:21,099 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.940)
+2025-03-22 23:10:21,099 - DetectorTest - WARNING - Alert! normal attack detected with 0.940 confidence
+2025-03-22 23:10:21,100 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:10:21,100 - DetectorTest - INFO -   Total Detections: 6
+2025-03-22 23:10:21,100 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-22 23:10:21,100 - DetectorTest - INFO -   normal: 6 detections (avg confidence: 0.988)
+2025-03-22 23:10:26,122 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.824)
+2025-03-22 23:10:26,123 - DetectorTest - WARNING - Alert! normal attack detected with 0.824 confidence
+2025-03-22 23:10:26,123 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:10:26,123 - DetectorTest - INFO -   Total Detections: 6
+2025-03-22 23:10:26,123 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-22 23:10:26,123 - DetectorTest - INFO -   normal: 6 detections (avg confidence: 0.959)
+2025-03-22 23:10:31,150 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.766)
+2025-03-22 23:10:31,150 - DetectorTest - WARNING - Alert! normal attack detected with 0.766 confidence
+2025-03-22 23:10:31,151 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:10:31,151 - DetectorTest - INFO -   Total Detections: 6
+2025-03-22 23:10:31,151 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-22 23:10:31,151 - DetectorTest - INFO -   normal: 6 detections (avg confidence: 0.920)
+2025-03-22 23:10:36,180 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.739)
+2025-03-22 23:10:36,181 - DetectorTest - WARNING - Alert! normal attack detected with 0.739 confidence
+2025-03-22 23:10:36,181 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:10:36,182 - DetectorTest - INFO -   Total Detections: 6
+2025-03-22 23:10:36,182 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-22 23:10:36,182 - DetectorTest - INFO -   normal: 6 detections (avg confidence: 0.876)
+2025-03-22 23:10:41,208 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.742)
+2025-03-22 23:10:41,208 - DetectorTest - WARNING - Alert! normal attack detected with 0.742 confidence
+2025-03-22 23:10:41,208 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:10:41,209 - DetectorTest - INFO -   Total Detections: 6
+2025-03-22 23:10:41,209 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-22 23:10:41,209 - DetectorTest - INFO -   normal: 6 detections (avg confidence: 0.833)
+2025-03-22 23:10:46,231 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.772)
+2025-03-22 23:10:46,232 - DetectorTest - WARNING - Alert! normal attack detected with 0.772 confidence
+2025-03-22 23:10:46,232 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:10:46,232 - DetectorTest - INFO -   Total Detections: 6
+2025-03-22 23:10:46,232 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-22 23:10:46,232 - DetectorTest - INFO -   normal: 6 detections (avg confidence: 0.797)
+2025-03-22 23:10:51,258 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.774)
+2025-03-22 23:10:51,258 - DetectorTest - WARNING - Alert! normal attack detected with 0.774 confidence
+2025-03-22 23:10:51,258 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:10:51,258 - DetectorTest - INFO -   Total Detections: 6
+2025-03-22 23:10:51,259 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-22 23:10:51,259 - DetectorTest - INFO -   normal: 6 detections (avg confidence: 0.770)
+2025-03-22 23:10:56,291 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.769)
+2025-03-22 23:10:56,292 - DetectorTest - WARNING - Alert! normal attack detected with 0.769 confidence
+2025-03-22 23:10:56,292 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:10:56,292 - DetectorTest - INFO -   Total Detections: 6
+2025-03-22 23:10:56,292 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-22 23:10:56,292 - DetectorTest - INFO -   normal: 6 detections (avg confidence: 0.761)
+2025-03-22 23:11:01,313 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.771)
+2025-03-22 23:11:01,313 - DetectorTest - WARNING - Alert! normal attack detected with 0.771 confidence
+2025-03-22 23:11:01,314 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:11:01,314 - DetectorTest - INFO -   Total Detections: 6
+2025-03-22 23:11:01,314 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-22 23:11:01,314 - DetectorTest - INFO -   normal: 6 detections (avg confidence: 0.761)
+2025-03-22 23:11:06,340 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.772)
+2025-03-22 23:11:06,340 - DetectorTest - WARNING - Alert! normal attack detected with 0.772 confidence
+2025-03-22 23:11:06,340 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:11:06,340 - DetectorTest - INFO -   Total Detections: 6
+2025-03-22 23:11:06,340 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-22 23:11:06,341 - DetectorTest - INFO -   normal: 6 detections (avg confidence: 0.767)
+2025-03-22 23:11:11,364 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.769)
+2025-03-22 23:11:11,365 - DetectorTest - WARNING - Alert! normal attack detected with 0.769 confidence
+2025-03-22 23:11:11,365 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:11:11,365 - DetectorTest - INFO -   Total Detections: 6
+2025-03-22 23:11:11,366 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-22 23:11:11,366 - DetectorTest - INFO -   normal: 6 detections (avg confidence: 0.771)
+2025-03-22 23:11:16,395 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.769)
+2025-03-22 23:11:16,395 - DetectorTest - WARNING - Alert! normal attack detected with 0.769 confidence
+2025-03-22 23:11:16,395 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:11:16,395 - DetectorTest - INFO -   Total Detections: 6
+2025-03-22 23:11:16,395 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-22 23:11:16,395 - DetectorTest - INFO -   normal: 6 detections (avg confidence: 0.771)
+2025-03-22 23:11:21,400 - DetectorTest - INFO - 
+Waiting for network recovery...
+2025-03-22 23:11:51,408 - DetectorTest - INFO - 
+Simulating DDoS attack...
+2025-03-22 23:11:51,408 - AttackSimulator - INFO - Creating DDoS attack targeting ['camera_01']
+2025-03-22 23:11:51,408 - AttackSimulator - INFO - Attack ddos_20250322_231151 created
+2025-03-22 23:11:51,409 - AttackSimulator - INFO - Launching ddos attack on targets: ['camera_01']
+2025-03-22 23:11:51,409 - AttackSimulator - INFO - Attack 3fdc1520-b13a-4129-ac86-e815263d6e99 launched successfully
+2025-03-22 23:11:51,429 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.727)
+2025-03-22 23:11:51,430 - DetectorTest - WARNING - Alert! normal attack detected with 0.727 confidence
+2025-03-22 23:11:51,430 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:11:51,430 - DetectorTest - INFO -   Total Detections: 1
+2025-03-22 23:11:51,430 - DetectorTest - INFO -   Alerts Triggered: 1
+2025-03-22 23:11:51,431 - DetectorTest - INFO -   normal: 1 detections (avg confidence: 0.727)
+2025-03-22 23:11:56,467 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.749)
+2025-03-22 23:11:56,467 - DetectorTest - WARNING - Alert! normal attack detected with 0.749 confidence
+2025-03-22 23:11:56,467 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:11:56,468 - DetectorTest - INFO -   Total Detections: 2
+2025-03-22 23:11:56,468 - DetectorTest - INFO -   Alerts Triggered: 2
+2025-03-22 23:11:56,468 - DetectorTest - INFO -   normal: 2 detections (avg confidence: 0.738)
+2025-03-22 23:12:01,492 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.731)
+2025-03-22 23:12:01,493 - DetectorTest - WARNING - Alert! normal attack detected with 0.731 confidence
+2025-03-22 23:12:01,493 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:12:01,493 - DetectorTest - INFO -   Total Detections: 3
+2025-03-22 23:12:01,493 - DetectorTest - INFO -   Alerts Triggered: 3
+2025-03-22 23:12:01,493 - DetectorTest - INFO -   normal: 3 detections (avg confidence: 0.736)
+2025-03-22 23:12:06,527 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.744)
+2025-03-22 23:12:06,527 - DetectorTest - WARNING - Alert! normal attack detected with 0.744 confidence
+2025-03-22 23:12:06,527 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:12:06,527 - DetectorTest - INFO -   Total Detections: 4
+2025-03-22 23:12:06,528 - DetectorTest - INFO -   Alerts Triggered: 4
+2025-03-22 23:12:06,528 - DetectorTest - INFO -   normal: 4 detections (avg confidence: 0.738)
+2025-03-22 23:12:11,552 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.731)
+2025-03-22 23:12:11,552 - DetectorTest - WARNING - Alert! normal attack detected with 0.731 confidence
+2025-03-22 23:12:11,552 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:12:11,552 - DetectorTest - INFO -   Total Detections: 5
+2025-03-22 23:12:11,552 - DetectorTest - INFO -   Alerts Triggered: 5
+2025-03-22 23:12:11,553 - DetectorTest - INFO -   normal: 5 detections (avg confidence: 0.737)
+2025-03-22 23:12:16,580 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.729)
+2025-03-22 23:12:16,581 - DetectorTest - WARNING - Alert! normal attack detected with 0.729 confidence
+2025-03-22 23:12:16,581 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:12:16,581 - DetectorTest - INFO -   Total Detections: 6
+2025-03-22 23:12:16,581 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-22 23:12:16,581 - DetectorTest - INFO -   normal: 6 detections (avg confidence: 0.735)
+2025-03-22 23:12:21,605 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.729)
+2025-03-22 23:12:21,606 - DetectorTest - WARNING - Alert! normal attack detected with 0.729 confidence
+2025-03-22 23:12:21,606 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:12:21,606 - DetectorTest - INFO -   Total Detections: 6
+2025-03-22 23:12:21,606 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-22 23:12:21,606 - DetectorTest - INFO -   normal: 6 detections (avg confidence: 0.736)
+2025-03-22 23:12:26,641 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.731)
+2025-03-22 23:12:26,642 - DetectorTest - WARNING - Alert! normal attack detected with 0.731 confidence
+2025-03-22 23:12:26,642 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:12:26,642 - DetectorTest - INFO -   Total Detections: 6
+2025-03-22 23:12:26,642 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-22 23:12:26,642 - DetectorTest - INFO -   normal: 6 detections (avg confidence: 0.733)
+2025-03-22 23:12:31,677 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.721)
+2025-03-22 23:12:31,678 - DetectorTest - WARNING - Alert! normal attack detected with 0.721 confidence
+2025-03-22 23:12:31,678 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:12:31,678 - DetectorTest - INFO -   Total Detections: 6
+2025-03-22 23:12:31,678 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-22 23:12:31,678 - DetectorTest - INFO -   normal: 6 detections (avg confidence: 0.731)
+2025-03-22 23:12:36,705 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.714)
+2025-03-22 23:12:36,705 - DetectorTest - WARNING - Alert! normal attack detected with 0.714 confidence
+2025-03-22 23:12:36,705 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:12:36,706 - DetectorTest - INFO -   Total Detections: 6
+2025-03-22 23:12:36,706 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-22 23:12:36,706 - DetectorTest - INFO -   normal: 6 detections (avg confidence: 0.726)
+2025-03-22 23:12:41,740 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.726)
+2025-03-22 23:12:41,740 - DetectorTest - WARNING - Alert! normal attack detected with 0.726 confidence
+2025-03-22 23:12:41,740 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:12:41,740 - DetectorTest - INFO -   Total Detections: 6
+2025-03-22 23:12:41,742 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-22 23:12:41,742 - DetectorTest - INFO -   normal: 6 detections (avg confidence: 0.725)
+2025-03-22 23:12:46,766 - AttackDetector - WARNING - Attack detected: normal (confidence: 0.724)
+2025-03-22 23:12:46,767 - DetectorTest - WARNING - Alert! normal attack detected with 0.724 confidence
+2025-03-22 23:12:46,767 - DetectorTest - INFO - Recent Activity Summary:
+2025-03-22 23:12:46,767 - DetectorTest - INFO -   Total Detections: 6
+2025-03-22 23:12:46,767 - DetectorTest - INFO -   Alerts Triggered: 6
+2025-03-22 23:12:46,767 - DetectorTest - INFO -   normal: 6 detections (avg confidence: 0.724)
+2025-03-22 23:12:51,771 - DetectorTest - INFO - 
+Final Detection Summary:
+2025-03-22 23:12:51,771 - DetectorTest - INFO - Total detections: 30
+2025-03-22 23:12:51,772 - DetectorTest - INFO - Total alerts: 30
+2025-03-22 23:12:51,772 - DetectorTest - ERROR - Test failed: Object of type bool is not JSON serializable
+2025-03-22 23:12:51,772 - DetectorTest - INFO - Stopping simulation...
+2025-03-22 23:12:51,772 - IoTSimulation - INFO - Stopping simulation
+2025-03-22 23:12:52,626 - DetectorTest - INFO - Test completed

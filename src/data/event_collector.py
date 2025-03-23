@@ -1,8 +1,15 @@
+"""
+Event Collection and Storage
+=======================
+
+Collects and stores security events and attack data locally.
+"""
+
 import logging
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, List, Any, Optional
 
 class EventCollector:
     def __init__(self):
@@ -78,15 +85,15 @@ class EventCollector:
             self.logger.warning(
                 f"\nALERT: {severity.upper()} severity attack detected!"
                 f"\nType: {data.get('attack_type', 'Unknown')}"
-                f"\nConfidence: {confidence:.2f}"
+                f"\nConfidence: {confidence:.2f if confidence else 'N/A'}"
                 f"\nSource: {source or 'Unknown'}"
                 f"\nTarget: {target or 'Unknown'}"
             )
 
     def get_events(self, event_type: Optional[str] = None,
-                   start_time: Optional[str] = None,
-                   end_time: Optional[str] = None,
-                   size: int = 100) -> list:
+                  start_time: Optional[str] = None,
+                  end_time: Optional[str] = None,
+                  size: int = 100) -> List[Dict]:
         """Retrieve events from local file storage."""
         events = []
         try:
@@ -108,8 +115,8 @@ class EventCollector:
         events.sort(key=lambda x: x["timestamp"], reverse=True)
         return events[:size]
 
-    def get_alert_stats(self) -> Dict[str, Any]:
-        """Get real-time statistics about alerts."""
+    def get_alerts(self, size: int = 100) -> List[Dict]:
+        """Get recent alerts."""
         alerts = []
         try:
             if self.alerts_file.exists():
@@ -117,13 +124,14 @@ class EventCollector:
                     alerts = [json.loads(line) for line in f]
         except Exception as e:
             self.logger.error(f"Failed to read alerts: {str(e)}")
-            return {
-                "total_alerts": 0,
-                "severity_distribution": {},
-                "attack_types": {},
-                "recent_alerts": []
-            }
+            return []
+        
+        alerts.sort(key=lambda x: x["timestamp"], reverse=True)
+        return alerts[:size]
 
+    def get_alert_stats(self) -> Dict[str, Any]:
+        """Get statistics about alerts."""
+        alerts = self.get_alerts()
         if not alerts:
             return {
                 "total_alerts": 0,
@@ -131,7 +139,7 @@ class EventCollector:
                 "attack_types": {},
                 "recent_alerts": []
             }
-
+        
         # Calculate statistics
         severity_dist = {}
         attack_types = {}
@@ -141,10 +149,7 @@ class EventCollector:
             
             severity_dist[severity] = severity_dist.get(severity, 0) + 1
             attack_types[attack_type] = attack_types.get(attack_type, 0) + 1
-
-        # Sort alerts by timestamp descending
-        alerts.sort(key=lambda x: x["timestamp"], reverse=True)
-
+        
         return {
             "total_alerts": len(alerts),
             "severity_distribution": severity_dist,

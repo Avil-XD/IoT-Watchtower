@@ -1,43 +1,53 @@
 """
-Attack Monitoring Dashboard
-=========================
+IoT Security Monitoring Dashboard
+===============================
 
-Real-time dashboard for monitoring IoT network attacks using Dash and Plotly.
+Real-time dashboard for monitoring IoT network attacks.
 """
 
 import logging
-from datetime import datetime, timedelta
-from pathlib import Path
-import pandas as pd
-from dash import Dash, html, dcc
+from datetime import datetime
+import dash
+from dash import html, dcc
 from dash.dependencies import Input, Output
 import plotly.express as px
-import plotly.graph_objs as go
+import plotly.graph_objects as go
+import pandas as pd
+from pathlib import Path
 
 from data.event_collector import EventCollector
+from ml.attack_detector import AttackDetector
 
-# Initialize logging
-log_dir = Path("logs")
-log_dir.mkdir(exist_ok=True)
-timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.FileHandler(log_dir / f"monitoring_{timestamp}.log"),
-        logging.StreamHandler()
-    ]
-)
-logger = logging.getLogger("Monitoring")
+def setup_logging():
+    """Configure logging for the monitoring system."""
+    log_dir = Path("logs")
+    log_dir.mkdir(exist_ok=True)
+    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_file = log_dir / f"monitoring_{timestamp}.log"
+    
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(log_file),
+            logging.StreamHandler()
+        ]
+    )
+    return logging.getLogger("Monitoring")
+
+# Initialize components
+logger = setup_logging()
+event_collector = EventCollector()
+attack_detector = AttackDetector()
 
 # Initialize Dash app
-app = Dash(__name__, title="IoT Security Monitor")
-collector = EventCollector()
+app = dash.Dash(__name__, title="IoT Security Monitor")
 
 app.layout = html.Div([
     html.H1("IoT Security Monitoring Dashboard"),
     
-    # Alert Statistics
+    # Attack Statistics
     html.Div([
         html.H2("Attack Statistics"),
         dcc.Interval(id="stats-update", interval=5000),  # Update every 5 seconds
@@ -77,12 +87,31 @@ app.layout = html.Div([
 )
 def update_stats(_):
     """Update alert statistics."""
-    stats = collector.get_alert_stats()
+    events = event_collector.get_events(event_type="security_alert", size=100)
+    
+    if not events:
+        return html.Div([
+            html.P("No alerts detected"),
+            html.P("System Status: Active")
+        ])
+    
+    # Calculate statistics
+    total_alerts = len(events)
+    recent_alerts = events[:5]
+    
+    # Count severity distribution
+    severity_dist = {}
+    for event in events:
+        severity = event.get("severity", "unknown")
+        severity_dist[severity] = severity_dist.get(severity, 0) + 1
     
     return html.Div([
-        html.P(f"Total Alerts: {stats['total_alerts']}"),
-        html.P(f"Recent Attack Types: {', '.join(stats['attack_types'].keys())}"),
-        html.P(f"Severity Distribution: {stats['severity_distribution']}")
+        html.P(f"Total Alerts: {total_alerts}"),
+        html.P(f"Severity Distribution: {severity_dist}"),
+        html.H4("Recent Alerts:"),
+        *[html.P(f"{alert['timestamp']}: {alert.get('details', {}).get('attack_type', 'Unknown')} "
+                f"({alert.get('severity', 'unknown')})") 
+          for alert in recent_alerts]
     ])
 
 @app.callback(
@@ -92,19 +121,20 @@ def update_stats(_):
     Input("chart-update", "n_intervals")
 )
 def update_charts(_):
-    """Update all charts with latest data."""
-    # Get recent events
-    events = collector.get_events(size=1000)
+    """Update all chart visualizations."""
+    events = event_collector.get_events(size=1000)
     if not events:
         return {}, {}, {}
-        
+    
+    # Create DataFrame for easier analysis
     df = pd.DataFrame(events)
+    df['timestamp'] = pd.to_datetime(df['timestamp'])
     
     # 1. Attack Timeline
     timeline = go.Figure()
     timeline.add_trace(go.Scatter(
-        x=pd.to_datetime(df["timestamp"]),
-        y=df["alert_triggered"].astype(int),
+        x=df['timestamp'],
+        y=df['alert_triggered'].astype(int),
         mode="lines",
         name="Attacks"
     ))
@@ -115,33 +145,43 @@ def update_charts(_):
     )
     
     # 2. Device Targeting
-    device_counts = pd.Series([
-        d.get("target_device", {}).get("type", "Unknown")
-        for d in df["details"]
+    target_counts = pd.Series([
+        event.get('target', 'Unknown')
+        for event in events
+        if event.get('event_type') == 'security_alert'
     ]).value_counts()
     
     device_chart = px.bar(
-        x=device_counts.index,
-        y=device_counts.values,
-        title="Attack Attempts by Device Type",
-        labels={"x": "Device Type", "y": "Number of Attacks"}
+        x=target_counts.index,
+        y=target_counts.values,
+        title="Attack Attempts by Target",
+        labels={"x": "Device", "y": "Number of Attacks"}
     )
     
     # 3. Attack Success Rate
-    success_counts = df["success"].value_counts()
+    success_counts = pd.Series([
+        "Successful" if event.get('details', {}).get('success', False) else "Blocked"
+        for event in events
+        if event.get('event_type') == 'security_alert'
+    ]).value_counts()
+    
     success_chart = px.pie(
         values=success_counts.values,
         names=success_counts.index,
-        title="Attack Success Rate",
-        labels={"success": "Successful", "failure": "Blocked"}
+        title="Attack Success Rate"
     )
     
     return timeline, device_chart, success_chart
 
 def main():
     """Run the monitoring dashboard."""
-    logger.info("Starting IoT Security Monitoring Dashboard")
-    app.run_server(debug=True, port=8050)
+    try:
+        logger.info("Starting IoT security monitoring system...")
+        app.run_server(debug=True, port=8050)
+        
+    except Exception as e:
+        logger.error(f"Monitoring failed: {str(e)}")
+        raise
 
 if __name__ == "__main__":
     main()

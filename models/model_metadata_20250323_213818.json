@@ -1,0 +1,70 @@
+{
+  "training_date": "2025-03-23T21:38:18.366210",
+  "num_samples": 180,
+  "class_distribution": {
+    "botnet": 48,
+    "normal": 96
+  },
+  "feature_importance": {
+    "feature_0": 0.12040166835230293,
+    "feature_1": 0.08109516305851652,
+    "feature_2": 0.07659259137619524,
+    "feature_3": 0.09918953709456971,
+    "feature_4": 0.09252076583451384,
+    "feature_5": 0.10227984367876419,
+    "feature_6": 0.09421706572265973,
+    "feature_7": 0.08199714086827058,
+    "feature_8": 0.02292493091280335,
+    "feature_9": 0.11381482260813437,
+    "feature_10": 0.0005776615531358664,
+    "feature_11": 0.0912404588888266,
+    "feature_12": 0.0,
+    "feature_13": 0.00043935541834777406,
+    "feature_14": 0.00040261974332116986,
+    "feature_15": 0.0007961247478840157,
+    "feature_16": 0.0007388336086840956,
+    "feature_17": 0.0018872503029218812,
+    "feature_18": 0.0,
+    "feature_19": 0.0,
+    "feature_20": 0.0005164987600216298,
+    "feature_21": 0.002041804541351239,
+    "feature_22": 0.0009622780415697676,
+    "feature_23": 0.0,
+    "feature_24": 0.0009841938469209966,
+    "feature_25": 0.0,
+    "feature_26": 0.0,
+    "feature_27": 0.014379391040284541,
+    "feature_28": 0.0,
+    "feature_29": 0.0,
+    "feature_30": 0.0,
+    "feature_31": 0.0,
+    "feature_32": 0.0
+  },
+  "performance": {
+    "botnet": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 12.0
+    },
+    "normal": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 24.0
+    },
+    "accuracy": 1.0,
+    "macro avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 36.0
+    },
+    "weighted avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 36.0
+    }
+  }
+}

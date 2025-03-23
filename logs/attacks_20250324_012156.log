@@ -64,3 +64,4 @@
 2025-03-24 01:21:56,728 [INFO] Updated smartcamera_01 status to infected
 2025-03-24 01:21:56,728 [INFO] Device smartcamera_01 infected. Total infected: 1
 2025-03-24 01:22:06,738 [INFO] Attack failed on device smartcamera_01
+2025-03-24 01:22:16,741 [INFO] Attack failed on device smartlock_02

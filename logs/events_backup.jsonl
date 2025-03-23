@@ -1,0 +1,2 @@
+{"timestamp": "2025-03-23T18:06:27.410254", "event_type": "device_metrics", "source": "device_001", "target": null, "details": {"cpu_usage": 75.5, "memory_usage": 60.2, "bandwidth_usage": 45.8, "error_count": 2}}
+{"timestamp": "2025-03-23T18:08:08.155557", "event_type": "test", "source": null, "target": null, "details": {"data": "sample"}}

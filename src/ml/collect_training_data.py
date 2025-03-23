@@ -59,14 +59,14 @@ def simulate_attacks(simulator, classifier):
         # Botnet attacks with different targets and durations
         {
             "type": "botnet",
-            "targets": ["camera1", "lock1"],
+            "targets": ["camera_1", "lock_1"],
             "duration": 180,
             "method": "create_botnet_attack",
             "description": "Multi-device botnet infection"
         },
         {
             "type": "botnet",
-            "targets": ["camera1"],
+            "targets": ["camera_1"],
             "duration": 120,
             "method": "create_botnet_attack",
             "description": "Single device botnet"
@@ -75,14 +75,14 @@ def simulate_attacks(simulator, classifier):
         # DDoS attacks with varying intensities
         {
             "type": "ddos",
-            "targets": ["camera1", "camera2"],
+            "targets": ["camera_1"],
             "duration": 150,
             "method": "create_ddos_attack",
             "description": "Camera network flood"
         },
         {
             "type": "ddos",
-            "targets": ["lock1"],
+            "targets": ["lock_1"],
             "duration": 90,
             "method": "create_ddos_attack",
             "description": "Lock system flood"
@@ -91,14 +91,14 @@ def simulate_attacks(simulator, classifier):
         # MitM attacks on different device combinations
         {
             "type": "mitm",
-            "targets": ["lock1", "thermostat1"],
+            "targets": ["lock_1", "thermostat_1"],
             "duration": 200,
             "method": "create_mitm_attack",
             "description": "Smart home control interception"
         },
         {
             "type": "mitm",
-            "targets": ["camera1"],
+            "targets": ["camera_1"],
             "duration": 160,
             "method": "create_mitm_attack",
             "description": "Camera feed interception"

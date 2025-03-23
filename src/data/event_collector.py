@@ -1,21 +1,22 @@
 import logging
+import json
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, Optional
-import json
-import requests
-from elasticsearch import Elasticsearch
-from elasticsearch.exceptions import ConnectionError
 
 class EventCollector:
-    def __init__(self, es_host: str = "localhost", es_port: int = 9200):
-        """Initialize event collector with Elasticsearch connection."""
+    def __init__(self):
+        """Initialize event collector with local file storage."""
         self._setup_logging()
-        self.es_host = es_host
-        self.es_port = es_port
-        self.es = None
-        self.fallback_file = Path("logs/events_backup.jsonl")
-        self.connect_elasticsearch()
+        
+        # Setup storage paths
+        self.base_dir = Path("data")
+        self.events_dir = self.base_dir / "events"
+        self.alerts_file = self.events_dir / "current_alerts.jsonl"
+        self.events_file = self.events_dir / "current_events.jsonl"
+        
+        # Create directories
+        self.events_dir.mkdir(parents=True, exist_ok=True)
 
     def _setup_logging(self):
         """Configure logging for the event collector."""
@@ -35,175 +36,102 @@ class EventCollector:
         )
         self.logger = logging.getLogger("EventCollector")
 
-    def connect_elasticsearch(self):
-        """Establish connection to Elasticsearch."""
+    def _store_event(self, event: Dict[str, Any], is_alert: bool = False):
+        """Store event in appropriate file."""
         try:
-            self.es = Elasticsearch([{
-                'host': self.es_host,
-                'port': self.es_port,
-                'scheme': 'http'
-            }])
-            
-            if not self.es.ping():
-                raise ConnectionError("Failed to connect to Elasticsearch")
-                
-            self.setup_indices()
-            self.logger.info("Successfully connected to Elasticsearch")
-            
+            target_file = self.alerts_file if is_alert else self.events_file
+            with open(target_file, 'a') as f:
+                f.write(json.dumps(event) + '\n')
+            self.logger.debug(f"Event stored: {event['event_type']}")
         except Exception as e:
-            self.logger.warning(f"Failed to connect to Elasticsearch: {str(e)}")
-            self.logger.info("Events will be stored in local file")
-            self.es = None
+            self.logger.error(f"Failed to store event: {str(e)}")
+            raise
 
-    def setup_indices(self):
-        """Create and configure Elasticsearch indices."""
-        if not self.es:
-            return
-
-        # Load index mappings
-        try:
-            with open("src/config/elasticsearch_mappings.json", 'r') as f:
-                mappings = json.load(f)
-        except Exception as e:
-            self.logger.error(f"Failed to load index mappings: {str(e)}")
-            return
-
-        indices = ['iot-events', 'iot-attacks', 'iot-metrics']
+    def get_alert_stats(self) -> Dict[str, Any]:
+        """Get real-time statistics about alerts."""
+        alerts = self.get_events(event_type="security_alert", size=1000)
         
-        for index in indices:
-            if not self.es.indices.exists(index=index):
-                try:
-                    self.es.indices.create(
-                        index=index,
-                        body=mappings,
-                        ignore=400
-                    )
-                    self.logger.info(f"Created index: {index}")
-                except Exception as e:
-                    self.logger.error(f"Failed to create index {index}: {str(e)}")
+        if not alerts:
+            return {
+                "total_alerts": 0,
+                "severity_distribution": {},
+                "attack_types": {},
+                "recent_alerts": []
+            }
 
-    def collect_event(self, event_type: str, data: Dict[str, Any], 
-                     source: Optional[str] = None, target: Optional[str] = None):
-        """Collect and store an event."""
+        # Calculate statistics
+        severity_dist = {}
+        attack_types = {}
+        for alert in alerts:
+            severity = alert.get("severity", "unknown")
+            attack_type = alert.get("details", {}).get("attack_type", "unknown")
+            
+            severity_dist[severity] = severity_dist.get(severity, 0) + 1
+            attack_types[attack_type] = attack_types.get(attack_type, 0) + 1
+
+        return {
+            "total_alerts": len(alerts),
+            "severity_distribution": severity_dist,
+            "attack_types": attack_types,
+            "recent_alerts": alerts[:5]  # Last 5 alerts
+        }
+
+    def collect_event(self, event_type: str, data: Dict[str, Any],
+                     source: Optional[str] = None, target: Optional[str] = None,
+                     severity: Optional[str] = None, confidence: Optional[float] = None,
+                     anomaly_score: Optional[float] = None):
+        """Collect and store an event with enhanced metadata."""
         event = {
             "timestamp": datetime.now().isoformat(),
             "event_type": event_type,
             "source": source,
             "target": target,
+            "severity": severity,
+            "confidence": confidence,
+            "anomaly_score": anomaly_score,
+            "alert_triggered": bool(severity and severity != "normal"),
+            "consecutive_alerts": data.get("consecutive_alerts", 0),
             "details": data
         }
-
-        if self.es:
-            try:
-                # Determine index based on event type
-                if event_type.startswith('attack'):
-                    index = 'iot-attacks'
-                elif event_type.startswith('metric'):
-                    index = 'iot-metrics'
-                else:
-                    index = 'iot-events'
-
-                self.es.index(
-                    index=index,
-                    body=event,
-                    refresh=True
-                )
-                self.logger.debug(f"Event stored in Elasticsearch: {event_type}")
-                
-            except Exception as e:
-                self.logger.error(f"Failed to store event in Elasticsearch: {str(e)}")
-                self._store_local_backup(event)
-        else:
-            self._store_local_backup(event)
-
-    def _store_local_backup(self, event: Dict[str, Any]):
-        """Store event in local backup file."""
-        try:
-            self.fallback_file.parent.mkdir(exist_ok=True)
-            with open(self.fallback_file, 'a') as f:
-                f.write(json.dumps(event) + '\n')
-        except Exception as e:
-            self.logger.error(f"Failed to store event in backup file: {str(e)}")
-
-    def get_events(self, event_type: Optional[str] = None, 
-                  start_time: Optional[str] = None,
-                  end_time: Optional[str] = None,
-                  size: int = 100) -> list:
-        """Retrieve events from storage."""
-        if not self.es:
-            return self._get_local_events(event_type)
-
-        query = {"query": {"bool": {"must": []}}}
         
-        if event_type:
-            query["query"]["bool"]["must"].append(
-                {"match": {"event_type": event_type}}
+        # Store as alert if it's a security event with severity
+        is_alert = event_type == "security_alert" and severity is not None
+        self._store_event(event, is_alert)
+        
+        # Log alerts immediately
+        if is_alert:
+            self.logger.warning(
+                f"\nALERT: {severity.upper()} severity attack detected!"
+                f"\nType: {data.get('attack_type', 'Unknown')}"
+                f"\nConfidence: {confidence:.2f}"
+                f"\nSource: {source or 'Unknown'}"
+                f"\nTarget: {target or 'Unknown'}"
             )
-            
-        if start_time or end_time:
-            range_query = {"range": {"timestamp": {}}}
-            if start_time:
-                range_query["range"]["timestamp"]["gte"] = start_time
-            if end_time:
-                range_query["range"]["timestamp"]["lte"] = end_time
-            query["query"]["bool"]["must"].append(range_query)
 
-        try:
-            result = self.es.search(
-                body=query,
-                size=size,
-                sort={"timestamp": "desc"}
-            )
-            return [hit["_source"] for hit in result["hits"]["hits"]]
-            
-        except Exception as e:
-            self.logger.error(f"Failed to retrieve events from Elasticsearch: {str(e)}")
-            return self._get_local_events(event_type)
-
-    def _get_local_events(self, event_type: Optional[str] = None) -> list:
-        """Retrieve events from local backup file."""
+    def get_events(self, event_type: Optional[str] = None,
+                    start_time: Optional[str] = None,
+                    end_time: Optional[str] = None,
+                    size: int = 100) -> list:
+        """Retrieve events from local file storage."""
         events = []
         try:
-            if self.fallback_file.exists():
-                with open(self.fallback_file, 'r') as f:
+            if self.events_file.exists():
+                with open(self.events_file, 'r') as f:
                     for line in f:
                         event = json.loads(line)
-                        if not event_type or event["event_type"] == event_type:
-                            events.append(event)
+                        if event_type and event["event_type"] != event_type:
+                            continue
+                        if start_time and event["timestamp"] < start_time:
+                            continue
+                        if end_time and event["timestamp"] > end_time:
+                            continue
+                        events.append(event)
         except Exception as e:
-            self.logger.error(f"Failed to read events from backup file: {str(e)}")
+            self.logger.error(f"Failed to read events from file: {str(e)}")
         
-        return events
-
-    def clear_local_backup(self):
-        """Clear the local backup file after successful upload to Elasticsearch."""
-        try:
-            if self.fallback_file.exists():
-                self.fallback_file.unlink()
-                self.logger.info("Local backup file cleared")
-        except Exception as e:
-            self.logger.error(f"Failed to clear backup file: {str(e)}")
-
-    def upload_backup_to_elasticsearch(self):
-        """Upload events from backup file to Elasticsearch."""
-        if not self.es or not self.fallback_file.exists():
-            return
-
-        try:
-            with open(self.fallback_file, 'r') as f:
-                for line in f:
-                    event = json.loads(line)
-                    self.collect_event(
-                        event["event_type"],
-                        event["details"],
-                        event.get("source"),
-                        event.get("target")
-                    )
-            
-            self.clear_local_backup()
-            
-        except Exception as e:
-            self.logger.error(f"Failed to upload backup to Elasticsearch: {str(e)}")
+        # Sort by timestamp descending and limit size
+        events.sort(key=lambda x: x["timestamp"], reverse=True)
+        return events[:size]
 
 if __name__ == "__main__":
     # Test event collector

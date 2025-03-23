@@ -68,7 +68,8 @@ class AttackDetector:
         try:
             models_dir = Path("models")
             if not models_dir.exists():
-                raise FileNotFoundError("Models directory not found")
+                self.logger.warning("Models directory not found, using rule-based detection")
+                return
 
             # Find latest model files
             model_files = list(models_dir.glob("attack_classifier_*.joblib"))
@@ -76,7 +77,8 @@ class AttackDetector:
             metadata_files = list(models_dir.glob("model_metadata_*.json"))
             
             if not model_files or not scaler_files:
-                raise FileNotFoundError("Model or scaler files not found")
+                self.logger.warning("Model or scaler files not found, using rule-based detection")
+                return
             
             # Load model and scaler
             latest_model = max(model_files, key=lambda x: x.stat().st_mtime)
@@ -95,13 +97,113 @@ class AttackDetector:
             self.logger.info(f"Performance metrics: {self.metadata.get('performance', {}).get('accuracy', 'N/A')}")
             
         except Exception as e:
-            self.logger.error(f"Failed to load model: {str(e)}")
-            raise
+            self.logger.warning(f"Failed to load model: {str(e)}. Using rule-based detection.")
+
+    def _detect_with_rules(self, network_status: Dict, current_time: datetime) -> Dict:
+        """Rule-based attack detection when ML model is not available."""
+        # Extract key metrics
+        metrics = network_status["metrics"]
+        error_rate = metrics["error_rate"]
+        packet_loss = metrics["packet_loss_rate"]
+        
+        # Initialize detection result
+        attack_type = "normal"
+        is_attack = False
+        confidence = 0.0
+        severity = None
+        anomaly_score = 0.0
+        
+        # Check for suspicious network behavior
+        if error_rate > 0.5 or packet_loss > 0.3:
+            attack_type = "network_flood"
+            is_attack = True
+            confidence = min(1.0, max(error_rate, packet_loss))
+            anomaly_score = confidence
+        
+        # Check device status
+        compromised_count = sum(
+            1 for device in network_status["devices"]
+            if device["status"] == "compromised"
+        )
+        high_resource_count = sum(
+            1 for device in network_status["devices"]
+            if device["metrics"]["cpu_usage"] > 90 or
+               device["metrics"]["memory_usage"] > 90
+        )
+        
+        if compromised_count > 0:
+            attack_type = "device_compromise"
+            is_attack = True
+            confidence = min(1.0, compromised_count * 0.4)
+            anomaly_score = max(anomaly_score, confidence)
+        
+        if high_resource_count > 1:
+            attack_type = "resource_abuse"
+            is_attack = True
+            confidence = min(1.0, high_resource_count * 0.3)
+            anomaly_score = max(anomaly_score, confidence)
+        
+        # Determine severity based on confidence and impact
+        if is_attack:
+            if confidence >= 0.8 or compromised_count > 1:
+                severity = "high"
+            elif confidence >= 0.6 or high_resource_count > 1:
+                severity = "medium"
+            else:
+                severity = "low"
+        
+        # Check alert triggers and escalation
+        alert_triggered = False
+        if severity:
+            alert_info = self.alert_history[severity]
+            timeout = self.thresholds[severity]["alert_timeout"]
+            
+            if not alert_info["last_alert"] or (
+                current_time - alert_info["last_alert"]
+            ).total_seconds() >= timeout:
+                alert_triggered = True
+                alert_info["last_alert"] = current_time
+                alert_info["consecutive"] += 1
+                
+                if alert_info["consecutive"] >= self.thresholds[severity]["consecutive_alerts"]:
+                    if severity == "low":
+                        severity = "medium"
+                    elif severity == "medium":
+                        severity = "high"
+                
+                self.logger.warning(
+                    f"{severity.upper()} severity {attack_type} detected (Rule-based)!\n"
+                    f"Confidence: {confidence:.3f}, Anomaly Score: {anomaly_score:.3f}\n"
+                    f"Consecutive Alerts: {alert_info['consecutive']}"
+                )
+        
+        result = {
+            "timestamp": current_time.isoformat(),
+            "detected_type": attack_type,
+            "is_attack": is_attack,
+            "severity": severity,
+            "confidence": float(confidence),
+            "anomaly_score": float(anomaly_score),
+            "alert_triggered": alert_triggered,
+            "consecutive_alerts": self.alert_history[severity]["consecutive"] if severity else 0,
+            "detection_method": "rule-based"
+        }
+        
+        # Store in history
+        self.detection_history.append(result)
+        return result
 
     def detect(self, network_status: Dict) -> Dict:
         """Enhanced attack detection with pattern recognition."""
-        if not self.model or not self.scaler:
-            raise RuntimeError("Model not loaded")
+        current_time = datetime.now()
+        
+        if self.model and self.scaler:
+            return self._detect_with_model(network_status, current_time)
+        else:
+            return self._detect_with_rules(network_status, current_time)
+            
+    def _detect_with_model(self, network_status: Dict, current_time: datetime) -> Dict:
+        """ML-based attack detection."""
         
         try:
             # Extract and scale features

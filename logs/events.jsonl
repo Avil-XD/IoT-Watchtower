@@ -1,4 +1,0 @@
-{"timestamp": "2025-03-23T18:11:53.938649", "event_type": "test", "source": null, "target": null, "details": {"status": "ok"}}
-{"timestamp": "2025-03-23T18:13:54.979681", "event_type": "device_metrics", "source": "device_001", "target": null, "details": {"cpu_usage": 75.5, "memory_usage": 60.2, "bandwidth_usage": 45.8, "error_count": 2}}
-{"timestamp": "2025-03-23T18:14:01.111689", "event_type": "device_metrics", "source": "device_001", "target": null, "details": {"cpu_usage": 75.5, "memory_usage": 60.2, "bandwidth_usage": 45.8, "error_count": 2}}
-{"timestamp": "2025-03-23T18:14:08.733646", "event_type": "device_metrics", "source": "device_001", "target": null, "details": {"cpu_usage": 75.5, "memory_usage": 60.2, "bandwidth_usage": 45.8, "error_count": 2}}

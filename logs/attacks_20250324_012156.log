@@ -1,0 +1,66 @@
+2025-03-24 01:21:56,707 [INFO] Starting IoT attack simulation
+2025-03-24 01:21:56,708 [INFO] Added device: smartcamera_01 (SmartCamera)
+2025-03-24 01:21:56,708 [INFO] Added device: smartlock_02 (SmartLock)
+2025-03-24 01:21:56,709 [INFO] Added device: smartthermostat_03 (SmartThermostat)
+2025-03-24 01:21:56,721 [INFO] Network initialized:
+{
+  "devices": [
+    {
+      "id": "smartcamera_01",
+      "type": "SmartCamera",
+      "ip_address": "192.168.1.11",
+      "status": "online",
+      "vulnerabilities": [
+        "weak_password",
+        "unencrypted_stream"
+      ]
+    },
+    {
+      "id": "smartlock_02",
+      "type": "SmartLock",
+      "ip_address": "192.168.1.12",
+      "status": "online",
+      "vulnerabilities": [
+        "weak_authentication",
+        "replay_attack"
+      ]
+    },
+    {
+      "id": "smartthermostat_03",
+      "type": "SmartThermostat",
+      "ip_address": "192.168.1.13",
+      "status": "online",
+      "vulnerabilities": [
+        "firmware_vulnerability",
+        "unauthorized_access"
+      ]
+    }
+  ],
+  "connection_type": "WiFi",
+  "topology": {
+    "nodes": [
+      "router_01",
+      "smartcamera_01",
+      "smartlock_02",
+      "smartthermostat_03"
+    ],
+    "edges": [
+      [
+        "router_01",
+        "smartcamera_01"
+      ],
+      [
+        "router_01",
+        "smartlock_02"
+      ],
+      [
+        "router_01",
+        "smartthermostat_03"
+      ]
+    ]
+  }
+}
+2025-03-24 01:21:56,727 [INFO] Starting botnet attack scenario targeting ['SmartCamera', 'SmartLock']
+2025-03-24 01:21:56,728 [INFO] Updated smartcamera_01 status to infected
+2025-03-24 01:21:56,728 [INFO] Device smartcamera_01 infected. Total infected: 1
+2025-03-24 01:22:06,738 [INFO] Attack failed on device smartcamera_01

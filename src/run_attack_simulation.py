@@ -5,52 +5,48 @@ Attack Simulation Runner
 Main script to run the IoT attack simulation.
 """
 
-import json
 import logging
-import os
 from datetime import datetime
+from pathlib import Path
 from typing import List
 
 from simulation.network import SmartHomeNetwork
 from simulation.attack_simulator import AttackSimulator, AttackEvent
+from data.event_collector import EventCollector
 
 def setup_logging():
     """Setup logging configuration."""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "logs")
-    os.makedirs(log_dir, exist_ok=True)
+    log_dir = Path("logs")
+    log_dir.mkdir(exist_ok=True)
     
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(message)s",
         handlers=[
-            logging.FileHandler(
-                os.path.join(log_dir, f"attack_simulation_{timestamp}.log")
-            ),
+            logging.FileHandler(log_dir / f"attacks_{timestamp}.log"),
             logging.StreamHandler()
         ]
     )
 
-def save_events(events: List[AttackEvent]):
-    """Save attack events to file."""
-    data_dir = os.path.join(
-        os.path.dirname(os.path.dirname(__file__)),
-        "data",
-        "events"
+def process_attack_event(event: AttackEvent, event_collector: EventCollector):
+    """Process and collect attack event."""
+    target_device = event.target_device
+    
+    event_collector.collect_event(
+        event_type="security_alert",
+        data={
+            "attack_type": event.attack_type,
+            "method": event.method,
+            "success": event.success,
+            "details": event.details
+        },
+        source="attack_simulator",
+        target=f"{target_device.type}_{target_device.id}",
+        severity="high" if event.success else "low",
+        confidence=0.9 if event.success else 0.6,
+        anomaly_score=0.85 if event.success else 0.4
     )
-    os.makedirs(data_dir, exist_ok=True)
-    
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_file = os.path.join(data_dir, f"attack_events_{timestamp}.json")
-    
-    with open(output_file, "w") as f:
-        json.dump(
-            [event.to_dict() for event in events],
-            f,
-            indent=2
-        )
-    
-    logging.info(f"Saved {len(events)} events to {output_file}")
 
 def main():
     """Main simulation runner."""
@@ -58,12 +54,12 @@ def main():
     logging.info("Starting IoT attack simulation")
     
     try:
-        # Initialize network
+        # Initialize components
         network = SmartHomeNetwork(num_devices=3)
-        logging.info("Network initialized:\n" + network.to_json())
-        
-        # Setup attack simulator
         simulator = AttackSimulator(network)
+        event_collector = EventCollector()
+        
+        logging.info("Network initialized:\n" + network.to_json())
         
         # Run attack scenario
         events = simulator.run_attack_scenario(
@@ -74,8 +70,9 @@ def main():
             interval=10    # Attack every 10 seconds
         )
         
-        # Save results
-        save_events(events)
+        # Process and collect events
+        for event in events:
+            process_attack_event(event, event_collector)
         
         # Print summary
         total_attacks = len(events)

@@ -1,0 +1,104 @@
+2025-03-24 00:47:37,249 [INFO] Starting IoT attack simulation
+2025-03-24 00:47:37,250 [INFO] Added device: smartcamera_01 (SmartCamera)
+2025-03-24 00:47:37,250 [INFO] Added device: smartlock_02 (SmartLock)
+2025-03-24 00:47:37,252 [INFO] Added device: smartthermostat_03 (SmartThermostat)
+2025-03-24 00:47:37,255 [INFO] Network initialized:
+{
+  "devices": [
+    {
+      "id": "smartcamera_01",
+      "type": "SmartCamera",
+      "ip_address": "192.168.1.11",
+      "status": "online",
+      "vulnerabilities": [
+        "weak_password",
+        "unencrypted_stream"
+      ]
+    },
+    {
+      "id": "smartlock_02",
+      "type": "SmartLock",
+      "ip_address": "192.168.1.12",
+      "status": "online",
+      "vulnerabilities": [
+        "weak_authentication",
+        "replay_attack"
+      ]
+    },
+    {
+      "id": "smartthermostat_03",
+      "type": "SmartThermostat",
+      "ip_address": "192.168.1.13",
+      "status": "online",
+      "vulnerabilities": [
+        "firmware_vulnerability",
+        "unauthorized_access"
+      ]
+    }
+  ],
+  "connection_type": "WiFi",
+  "topology": {
+    "nodes": [
+      "router_01",
+      "smartcamera_01",
+      "smartlock_02",
+      "smartthermostat_03"
+    ],
+    "edges": [
+      [
+        "router_01",
+        "smartcamera_01"
+      ],
+      [
+        "router_01",
+        "smartlock_02"
+      ],
+      [
+        "router_01",
+        "smartthermostat_03"
+      ]
+    ]
+  }
+}
+2025-03-24 00:47:37,264 [INFO] Starting botnet attack scenario targeting ['SmartCamera', 'SmartLock']
+2025-03-24 00:47:37,264 [INFO] Updated smartcamera_01 status to infected
+2025-03-24 00:47:37,266 [INFO] Device smartcamera_01 infected. Total infected: 1
+2025-03-24 00:47:47,266 [INFO] Attack failed on device smartlock_02
+2025-03-24 00:47:57,272 [INFO] Attack failed on device smartlock_02
+2025-03-24 00:48:07,272 [INFO] Attack failed on device smartlock_02
+2025-03-24 00:48:17,288 [INFO] Attack failed on device smartlock_02
+2025-03-24 00:48:27,298 [INFO] Attack failed on device smartcamera_01
+2025-03-24 00:48:37,304 [INFO] Attack failed on device smartlock_02
+2025-03-24 00:48:47,316 [INFO] Attack failed on device smartlock_02
+2025-03-24 00:48:57,320 [INFO] Attack failed on device smartcamera_01
+2025-03-24 00:49:07,322 [INFO] Attack failed on device smartcamera_01
+2025-03-24 00:49:17,329 [INFO] Attack failed on device smartlock_02
+2025-03-24 00:49:27,333 [INFO] Attack failed on device smartcamera_01
+2025-03-24 00:49:37,338 [INFO] Attack failed on device smartlock_02
+2025-03-24 00:49:47,343 [INFO] Attack failed on device smartcamera_01
+2025-03-24 00:49:57,348 [INFO] Attack failed on device smartlock_02
+2025-03-24 00:50:07,350 [INFO] Attack failed on device smartlock_02
+2025-03-24 00:50:17,354 [INFO] Attack failed on device smartcamera_01
+2025-03-24 00:50:27,366 [INFO] Attack failed on device smartlock_02
+2025-03-24 00:50:37,368 [INFO] Attack failed on device smartlock_02
+2025-03-24 00:50:47,370 [INFO] Attack failed on device smartcamera_01
+2025-03-24 00:50:57,379 [INFO] Attack failed on device smartcamera_01
+2025-03-24 00:51:07,381 [INFO] Attack failed on device smartlock_02
+2025-03-24 00:51:17,382 [INFO] Attack failed on device smartlock_02
+2025-03-24 00:51:27,389 [INFO] Attack failed on device smartcamera_01
+2025-03-24 00:51:37,395 [INFO] Attack failed on device smartcamera_01
+2025-03-24 00:51:47,400 [INFO] Attack failed on device smartlock_02
+2025-03-24 00:51:57,401 [INFO] Attack failed on device smartlock_02
+2025-03-24 00:52:07,409 [INFO] Attack failed on device smartlock_02
+2025-03-24 00:52:17,422 [INFO] Attack failed on device smartlock_02
+2025-03-24 00:52:27,435 [INFO] Attack failed on device smartlock_02
+2025-03-24 00:52:37,449 [INFO] Attack scenario completed. Generated 30 events
+2025-03-24 00:52:37,451 [ERROR] Simulation failed: Invalid format specifier
+Traceback (most recent call last):
+  File "C:\Users\Saunav Barman\OneDrive\Documents\VS Code\IoT-Watchtower\src\run_attack_simulation.py", line 75, in main
+    process_attack_event(event, event_collector)
+  File "C:\Users\Saunav Barman\OneDrive\Documents\VS Code\IoT-Watchtower\src\run_attack_simulation.py", line 36, in process_attack_event
+    event_collector.collect_event(
+  File "C:\Users\Saunav Barman\OneDrive\Documents\VS Code\IoT-Watchtower\src\data\event_collector.py", line 86, in collect_event
+    f"\nALERT: {severity.upper()} severity attack detected!"
+ValueError: Invalid format specifier

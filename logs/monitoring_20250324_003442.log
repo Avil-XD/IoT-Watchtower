@@ -1,0 +1,5 @@
+2025-03-24 00:34:48,291 - AttackDetector - INFO - Loaded model from models\attack_classifier_20250323_213818.joblib
+2025-03-24 00:34:48,291 - AttackDetector - INFO - Performance metrics: 1.0
+2025-03-24 00:34:48,296 - Monitoring - INFO - Starting IoT security monitoring system...
+2025-03-24 00:34:48,297 - dash.dash - INFO - Dash is running on http://127.0.0.1:8050/
+

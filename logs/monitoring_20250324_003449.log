@@ -1,0 +1,3 @@
+2025-03-24 00:34:50,165 - AttackDetector - INFO - Loaded model from models\attack_classifier_20250323_213818.joblib
+2025-03-24 00:34:50,165 - AttackDetector - INFO - Performance metrics: 1.0
+2025-03-24 00:34:50,170 - Monitoring - INFO - Starting IoT security monitoring system...

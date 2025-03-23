@@ -82,12 +82,21 @@ class EventCollector:
         
         # Log alerts immediately
         if is_alert:
+            severity_str = severity.upper() if severity else "UNKNOWN"
+            confidence_str = f"{confidence:.2f}" if confidence is not None else "N/A"
+            
             self.logger.warning(
-                f"\nALERT: {severity.upper()} severity attack detected!"
-                f"\nType: {data.get('attack_type', 'Unknown')}"
-                f"\nConfidence: {confidence:.2f if confidence else 'N/A'}"
-                f"\nSource: {source or 'Unknown'}"
-                f"\nTarget: {target or 'Unknown'}"
+                "ALERT: {} severity attack detected!\n"
+                "Type: {}\n"
+                "Confidence: {}\n"
+                "Source: {}\n"
+                "Target: {}".format(
+                    severity_str,
+                    data.get('attack_type', 'Unknown'),
+                    confidence_str,
+                    source or 'Unknown',
+                    target or 'Unknown'
+                )
             )
 
     def get_events(self, event_type: Optional[str] = None,

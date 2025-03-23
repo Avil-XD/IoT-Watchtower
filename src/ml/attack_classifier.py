@@ -5,7 +5,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 import logging
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Any
+from datetime import datetime
 import joblib
 import json
 
@@ -17,6 +18,33 @@ class AttackClassifier:
         self.training_data = []
         self.model = None
         self.scaler = None
+        
+        # Attack characteristics for improved classification
+        self.attack_signatures = {
+            "botnet": {
+                "indicators": ["high_cpu", "high_memory", "irregular_traffic", "propagation"],
+                "thresholds": {
+                    "cpu_usage": 70,
+                    "memory_usage": 80,
+                    "error_rate": 0.3
+                }
+            },
+            "ddos": {
+                "indicators": ["bandwidth_spike", "packet_flood", "high_latency"],
+                "thresholds": {
+                    "bandwidth_usage": 150,  # % of normal
+                    "packet_count": 1000,
+                    "error_rate": 0.4
+                }
+            },
+            "mitm": {
+                "indicators": ["auth_anomalies", "traffic_routing", "latency_changes"],
+                "thresholds": {
+                    "latency": 200,  # ms
+                    "packet_loss": 0.1
+                }
+            }
+        }
 
     def _setup_logging(self):
         """Configure classifier-specific logging."""
@@ -37,78 +65,66 @@ class AttackClassifier:
         self.logger = logging.getLogger("AttackClassifier")
 
     def _extract_features(self, network_status: Dict) -> List[float]:
-        """Extract features from network status with advanced pattern detection."""
+        """Extract advanced features from network status."""
         # Network-level features
         network_metrics = [
             network_status["metrics"]["total_bandwidth"],
             network_status["metrics"]["latency"],
             network_status["metrics"]["packet_loss_rate"],
-            network_status["metrics"]["error_rate"]
+            network_status["metrics"]["error_rate"],
+            network_status["metrics"]["connection_stability"]
         ]
         
-        # Network-level derived features
+        # Calculate network health score
         network_health = 1.0 - (
             network_status["metrics"]["error_rate"] * 0.4 +
             network_status["metrics"]["packet_loss_rate"] * 0.6
         )
         network_metrics.append(network_health)
         
-        # Traffic anomaly score
-        baseline_bandwidth = 100  # Typical baseline, adjust based on network
-        traffic_anomaly = abs(
-            network_status["metrics"]["total_bandwidth"] - baseline_bandwidth
-        ) / baseline_bandwidth
-        network_metrics.append(traffic_anomaly)
-        
-        # Device-level features with temporal patterns
+        # Device metrics and anomaly indicators
         device_metrics = []
-        device_ratios = []
-        device_anomalies = []
+        security_metrics = []
+        anomaly_indicators = []
         
         for device in network_status["devices"]:
             metrics = device["metrics"]
-            current_metrics = [
+            
+            # Basic device metrics
+            device_metrics.extend([
                 metrics["cpu_usage"],
                 metrics["memory_usage"],
                 metrics["bandwidth_usage"],
                 metrics["packet_count"],
                 metrics["error_count"]
-            ]
-            device_metrics.extend(current_metrics)
-            
-            # Performance ratios
-            if metrics["packet_count"] > 0:
-                error_rate = metrics["error_count"] / metrics["packet_count"]
-                device_ratios.append(error_rate)
-            
-            if metrics["bandwidth_usage"] > 0:
-                packet_density = metrics["packet_count"] / metrics["bandwidth_usage"]
-                device_ratios.append(packet_density)
-            
-            # Resource utilization patterns
-            resource_usage = (metrics["cpu_usage"] + metrics["memory_usage"]) / 2
-            device_ratios.append(resource_usage)
-            
-            # Detect unusual patterns
-            cpu_memory_ratio = metrics["cpu_usage"] / max(metrics["memory_usage"], 1)
-            bandwidth_packet_ratio = metrics["bandwidth_usage"] / max(metrics["packet_count"], 1)
-            
-            # Anomaly indicators
-            is_cpu_spike = metrics["cpu_usage"] > 80
-            is_memory_spike = metrics["memory_usage"] > 80
-            is_bandwidth_spike = metrics["bandwidth_usage"] > baseline_bandwidth * 1.5
-            is_error_spike = metrics["error_count"] > 10
-            
-            device_anomalies.extend([
-                float(is_cpu_spike),
-                float(is_memory_spike),
-                float(is_bandwidth_spike),
-                float(is_error_spike),
-                cpu_memory_ratio,
-                bandwidth_packet_ratio
             ])
+            
+            # Security-related features
+            security_metrics.extend([
+                device["security_level"],
+                len(device["vulnerabilities"]),
+                float(device["status"] == "compromised")
+            ])
+            
+            # Device-specific anomaly detection
+            if device["type"] == "SmartCamera":
+                anomaly_indicators.extend([
+                    float(metrics["stream_latency"] > 150),  # High latency
+                    float(metrics["video_quality"] < 0.7),   # Quality degradation
+                ])
+            elif device["type"] == "SmartLock":
+                anomaly_indicators.extend([
+                    float(metrics["failed_auths"] > 10),     # Auth failures
+                    float(metrics["battery_level"] < 0.3),   # Low battery
+                ])
+            elif device["type"] == "SmartThermostat":
+                anomaly_indicators.extend([
+                    float(abs(metrics["temperature"] - 22) > 5),  # Unusual temp
+                    float(metrics["energy_consumption"] > 50),    # High energy use
+                ])
         
-        return network_metrics + device_metrics + device_ratios + device_anomalies
+        # Combine all features
+        return network_metrics + device_metrics + security_metrics + anomaly_indicators
 
     def collect_training_data(self, network_status: Dict, attack_status: Dict):
         """Collect network status data for training."""
@@ -116,26 +132,25 @@ class AttackClassifier:
         
         training_sample = {
             "features": features,
-            "label": attack_status["type"]
+            "label": attack_status["type"],
+            "timestamp": datetime.now().isoformat()
         }
         
         self.training_data.append(training_sample)
         
+        # Log collection event
         if self.event_collector:
             self.event_collector.record_event(
                 event_type="training_data",
                 details={
                     "network_metrics": network_status["metrics"],
-                    "device_metrics": {
-                        d["id"]: d["metrics"]
-                        for d in network_status["devices"]
-                    },
-                    "attack_type": attack_status["type"]
+                    "attack_type": attack_status["type"],
+                    "features_count": len(features)
                 }
             )
 
     def train(self):
-        """Train the classifier with advanced feature analysis and evaluation."""
+        """Train the classifier with optimized parameters."""
         if not self.training_data:
             raise ValueError("No training data available")
         
@@ -143,7 +158,7 @@ class AttackClassifier:
         X = np.array([sample["features"] for sample in self.training_data])
         y = np.array([sample["label"] for sample in self.training_data])
         
-        # Split data with stratification
+        # Split data
         X_train, X_test, y_train, y_test = train_test_split(
             X, y, test_size=0.2, random_state=42, stratify=y
         )
@@ -153,7 +168,7 @@ class AttackClassifier:
         X_train_scaled = self.scaler.fit_transform(X_train)
         X_test_scaled = self.scaler.transform(X_test)
         
-        # Calculate class weights for imbalanced data
+        # Calculate class weights
         unique_classes = np.unique(y_train)
         class_counts = np.bincount([np.where(unique_classes == c)[0][0] for c in y_train])
         total_samples = len(y_train)
@@ -162,15 +177,15 @@ class AttackClassifier:
             for cls, count in zip(unique_classes, class_counts)
         }
         
-        # Initialize model with optimized hyperparameters
+        # Initialize model with optimized parameters
         self.model = RandomForestClassifier(
-            n_estimators=300,  # Increased for better stability
-            max_depth=20,      # Increased for complex patterns
+            n_estimators=300,
+            max_depth=20,
             min_samples_split=4,
             min_samples_leaf=2,
             class_weight=class_weights,
             random_state=42,
-            n_jobs=-1  # Parallel processing
+            n_jobs=-1
         )
         
         # Train model
@@ -178,21 +193,9 @@ class AttackClassifier:
         
         # Evaluate model
         y_pred = self.model.predict(X_test_scaled)
-        y_pred_proba = self.model.predict_proba(X_test_scaled)
-        
-        # Calculate and log performance metrics
-        self.logger.info("\nModel Performance Metrics:")
         class_report = classification_report(y_test, y_pred, output_dict=True)
-        self.logger.info("\n" + classification_report(y_test, y_pred))
         
-        # Analyze feature importance
-        feature_importance = self.model.feature_importances_
-        feature_importance_dict = {
-            f"feature_{i}": importance
-            for i, importance in enumerate(feature_importance)
-        }
-        
-        # Save model with metadata
+        # Generate metadata
         metadata = {
             "training_date": datetime.now().isoformat(),
             "num_samples": len(y),
@@ -200,43 +203,63 @@ class AttackClassifier:
                 str(cls): int(count)
                 for cls, count in zip(unique_classes, class_counts)
             },
-            "feature_importance": feature_importance_dict,
-            "model_params": self.model.get_params(),
-            "performance_metrics": {
-                "accuracy": float(class_report['accuracy']),
-                "macro_avg": class_report['macro avg'],
-                "class_metrics": {
-                    str(cls): metrics
-                    for cls, metrics in class_report.items()
-                    if cls not in ['accuracy', 'macro avg', 'weighted avg']
-                }
-            }
+            "feature_importance": {
+                f"feature_{i}": float(imp)
+                for i, imp in enumerate(self.model.feature_importances_)
+            },
+            "performance": class_report
         }
         
+        # Save model and metadata
         self._save_model(metadata)
+        
+        self.logger.info("\nTraining Results:")
+        self.logger.info("\n" + classification_report(y_test, y_pred))
 
     def predict(self, network_status: Dict) -> Dict:
         """Predict attack probability for current network status."""
         if not self.model or not self.scaler:
             raise RuntimeError("Model not trained")
         
+        # Extract and scale features
         features = self._extract_features(network_status)
         features_scaled = self.scaler.transform(np.array(features).reshape(1, -1))
         
+        # Get predictions and probabilities
         prediction = self.model.predict(features_scaled)[0]
         probabilities = self.model.predict_proba(features_scaled)[0]
         
+        # Calculate attack confidence
+        confidence = float(max(probabilities))
+        
+        # Determine attack signatures
+        detected_signatures = []
+        if prediction != "normal":
+            signatures = self.attack_signatures.get(prediction, {}).get("indicators", [])
+            thresholds = self.attack_signatures.get(prediction, {}).get("thresholds", {})
+            
+            # Check for signature matches
+            for device in network_status["devices"]:
+                metrics = device["metrics"]
+                if prediction == "botnet" and metrics["cpu_usage"] > thresholds["cpu_usage"]:
+                    detected_signatures.append("high_cpu")
+                elif prediction == "ddos" and metrics["bandwidth_usage"] > thresholds["bandwidth_usage"]:
+                    detected_signatures.append("bandwidth_spike")
+                elif prediction == "mitm" and device["status"] == "intercepted":
+                    detected_signatures.append("traffic_routing")
+        
         return {
             "prediction": prediction,
-            "confidence": float(max(probabilities)),
+            "confidence": confidence,
             "probabilities": {
                 str(cls): float(prob)
                 for cls, prob in zip(self.model.classes_, probabilities)
-            }
+            },
+            "detected_signatures": detected_signatures
         }
 
-    def _save_model(self, metadata: Dict = None):
-        """Save trained model, scaler and metadata."""
+    def _save_model(self, metadata: Dict):
+        """Save trained model and metadata."""
         models_dir = Path("models")
         models_dir.mkdir(exist_ok=True)
         
@@ -250,25 +273,11 @@ class AttackClassifier:
         scaler_path = models_dir / f"feature_scaler_{timestamp}.joblib"
         joblib.dump(self.scaler, scaler_path)
         
-        # Save metadata if provided
-        if metadata:
-            metadata_path = models_dir / f"model_metadata_{timestamp}.json"
-            with open(metadata_path, 'w') as f:
-                json.dump(metadata, f, indent=2)
-            self.logger.info(f"Model metadata saved to {metadata_path}")
+        # Save metadata
+        metadata_path = models_dir / f"model_metadata_{timestamp}.json"
+        with open(metadata_path, 'w') as f:
+            json.dump(metadata, f, indent=2)
         
         self.logger.info(f"Model saved to {model_path}")
         self.logger.info(f"Scaler saved to {scaler_path}")
-
-    def load_model(self, model_path: Path, scaler_path: Path):
-        """Load trained model and scaler."""
-        self.model = joblib.load(model_path)
-        self.scaler = joblib.load(scaler_path)
-        self.logger.info(f"Model loaded from {model_path}")
-        self.logger.info(f"Scaler loaded from {scaler_path}")
-
-if __name__ == "__main__":
-    # For testing
-    from datetime import datetime
-    classifier = AttackClassifier()
-    print("Classifier initialized")
+        self.logger.info(f"Metadata saved to {metadata_path}")

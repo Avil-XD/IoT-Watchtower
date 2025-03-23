@@ -1,59 +1,104 @@
-from main import SecuritySimulationSystem
-from simulation.attack_simulator import AttackConfig
+import logging
+from pathlib import Path
+from datetime import datetime
 import time
 
-def main():
-    # Initialize the security simulation system
-    system = SecuritySimulationSystem()
+from simulation.attack_simulator import AttackSimulator
+from ml.attack_detector import AttackDetector
+from monitoring.event_collector import EventCollector
+
+def setup_logging():
+    """Configure simulation logging."""
+    log_dir = Path("logs")
+    log_dir.mkdir(exist_ok=True)
     
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_file = log_dir / f"simulation_{timestamp}.log"
+    
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(log_file),
+            logging.StreamHandler()
+        ]
+    )
+    return logging.getLogger("Simulation")
+
+def run_simulation():
+    """Run the attack simulation and detection."""
+    logger = setup_logging()
+    logger.info("Starting IoT security simulation")
+
     try:
-        # Initialize and start the system
-        system.initialize()
-        system.iot_simulation.start_simulation()
+        # Initialize components
+        simulator = AttackSimulator()  # Now creates its own network
+        detector = AttackDetector()
+        event_collector = EventCollector()
+
+        # Let network stabilize
+        logger.info("Letting network stabilize...")
+        time.sleep(10)
+
+        # Create different attack types
+        attacks = [
+            simulator.create_botnet_attack(["camera1", "lock1"], duration=180),
+            simulator.create_ddos_attack(["camera2"], duration=120),
+            simulator.create_mitm_attack(["lock2", "thermostat1"], duration=150)
+        ]
+
+        # Run simulation
+        for attack in attacks:
+            # Launch attack
+            logger.info(f"Launching {attack.type} attack...")
+            attack_id = simulator.launch_attack(attack)
+
+            # Monitor attack progress
+            start_time = time.time()
+            while time.time() - start_time < attack.duration:
+                # Get current network status
+                network_status = simulator.get_network_status()
+                
+                # Detect attacks
+                detection_result = detector.detect(network_status)
+                
+                # Record events
+                event_collector.record_attack_detection(detection_result, network_status)
+                
+                # Log detection results
+                logger.info(f"\nDetection Results:")
+                logger.info(f"Attack Type: {detection_result['detected_type']}")
+                logger.info(f"Confidence: {detection_result['confidence']:.3f}")
+                if detection_result.get("severity"):
+                    logger.info(f"Severity: {detection_result['severity']}")
+                    if detection_result['severity'] == "high":
+                        logger.warning("HIGH SEVERITY ATTACK DETECTED!")
+                
+                time.sleep(5)  # Update every 5 seconds
+
+            # Let network recover between attacks
+            logger.info(f"Attack {attack_id} completed")
+            logger.info("Letting network recover...")
+            time.sleep(20)
+
+        # Print final statistics
+        logger.info("\nSimulation Summary:")
+        history = detector.get_detection_history()
         
-        # Create botnet attack configuration targeting smart camera and lock
-        attack_config = AttackConfig(
-            attack_type="botnet",
-            targets=["camera_01", "lock_01"],
-            duration=300  # 5 minutes attack duration
-        )
+        total_alerts = sum(1 for d in history if d["alert_triggered"])
+        high_severity = sum(1 for d in history if d.get("severity") == "high")
         
-        # Launch the attack
-        print("Launching botnet attack...")
-        attack_id = system.simulate_attack(attack_config)
+        logger.info(f"Total Detections: {len(history)}")
+        logger.info(f"Total Alerts: {total_alerts}")
+        logger.info(f"High Severity Events: {high_severity}")
         
-        # Monitor the attack for its duration
-        start_time = time.time()
-        while time.time() - start_time < attack_config.duration:
-            # Get attack status
-            status = system.attack_simulator.get_attack_status(attack_id)
-            print(f"\nAttack Status: {status['status']}")
-            
-            if status['events']:
-                print("Current Events:")
-                for event in status['events']:
-                    print(f"- Phase: {event['phase']}: {event['description']}")
-            
-            time.sleep(10)  # Update every 10 seconds
-        
-        # Stop the attack
-        print("\nStopping attack...")
-        system.stop_attack(attack_id)
-        
-        # Let the system process final events
-        time.sleep(5)
-        
-        # Shutdown the system
-        system.shutdown()
-        print("\nSimulation completed successfully")
-        
+        logger.info("Simulation completed successfully")
+
     except KeyboardInterrupt:
-        print("\nReceived shutdown signal")
-        system.shutdown()
+        logger.info("\nSimulation interrupted by user")
     except Exception as e:
-        print(f"\nError during simulation: {str(e)}")
-        system.shutdown()
+        logger.error(f"Error during simulation: {str(e)}")
         raise
 
 if __name__ == "__main__":
-    main()
+    run_simulation()

@@ -93,11 +93,59 @@ class BotnetAttack:
         return event
 
 class AttackSimulator:
-    def __init__(self, network: SmartHomeNetwork):
-        self.network = network
+    def __init__(self, network: Optional[SmartHomeNetwork] = None):
+        """Initialize attack simulator with network."""
+        self.network = network or SmartHomeNetwork(num_devices=3)
         self.logger = logging.getLogger(__name__)
         self.attacks = {
-            "botnet": BotnetAttack(network)
+            "botnet": BotnetAttack(self.network)
+        }
+        self.active_events: List[AttackEvent] = []
+        
+    def get_network_status(self) -> Dict:
+        """Get current network status including device metrics."""
+        network_state = self.network.get_network_state()
+        
+        # Add simulated metrics
+        for device in network_state["devices"]:
+            device["metrics"] = self._generate_device_metrics(device)
+            
+        network_state["metrics"] = self._generate_network_metrics()
+        return network_state
+    
+    def _generate_device_metrics(self, device: Dict) -> Dict:
+        """Generate realistic device metrics based on state."""
+        is_infected = device["status"] == "infected"
+        is_compromised = device["status"] == "compromised"
+        
+        base_cpu = 20 if not is_infected else random.uniform(70, 95)
+        base_memory = 30 if not is_infected else random.uniform(60, 90)
+        
+        return {
+            "cpu_usage": min(100, base_cpu + random.uniform(-5, 5)),
+            "memory_usage": min(100, base_memory + random.uniform(-5, 5)),
+            "bandwidth_usage": random.uniform(20, 90) if is_infected else random.uniform(5, 30),
+            "packet_count": int(random.uniform(100, 1000)) if is_infected else int(random.uniform(10, 100)),
+            "error_count": int(random.uniform(50, 200)) if is_compromised else int(random.uniform(0, 10)),
+            "stream_latency": random.uniform(100, 300) if is_infected else random.uniform(20, 100),
+            "video_quality": random.uniform(0.3, 0.6) if is_compromised else random.uniform(0.8, 1.0),
+            "failed_auths": int(random.uniform(5, 20)) if is_compromised else int(random.uniform(0, 3)),
+            "battery_level": random.uniform(0.2, 0.4) if is_infected else random.uniform(0.7, 1.0),
+            "temperature": random.uniform(18, 26),
+            "energy_consumption": random.uniform(40, 80) if is_infected else random.uniform(10, 30)
+        }
+    
+    def _generate_network_metrics(self) -> Dict:
+        """Generate overall network metrics."""
+        infected_count = len(self.attacks["botnet"].infected_devices)
+        is_under_attack = infected_count > 0
+        
+        return {
+            "total_bandwidth": random.uniform(50, 90) if is_under_attack else random.uniform(10, 40),
+            "latency": random.uniform(100, 300) if is_under_attack else random.uniform(20, 80),
+            "packet_loss_rate": random.uniform(0.1, 0.3) if is_under_attack else random.uniform(0, 0.05),
+            "error_rate": random.uniform(0.2, 0.5) if is_under_attack else random.uniform(0, 0.1),
+            "connection_stability": random.uniform(0.4, 0.7) if is_under_attack else random.uniform(0.9, 1.0)
         }
         
     def execute_attack(self, 
@@ -111,9 +159,24 @@ class AttackSimulator:
         attack = self.attacks[attack_type]
         
         if method == "malware_propagation":
-            return attack.propagate_malware(target_types)
+            event = attack.propagate_malware(target_types)
+            if event:
+                self.active_events.append(event)
+            return event
         else:
             raise ValueError(f"Unsupported attack method: {method}")
+            
+    def get_attack_status(self, event: AttackEvent) -> Dict:
+        """Get current status of an attack event."""
+        return {
+            "status": "active" if event in self.active_events else "completed",
+            "target_devices": [
+                device.id for device in self.network.devices.values()
+                if device.status in ["infected", "compromised"]
+            ],
+            "success": event.success,
+            "details": event.details
+        }
             
     def run_attack_scenario(self,
                           attack_type: str,

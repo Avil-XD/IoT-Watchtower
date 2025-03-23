@@ -1,3 +1,7 @@
+"""
+Attack Classification using Machine Learning
+"""
+
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
@@ -28,21 +32,6 @@ class AttackClassifier:
                     "memory_usage": 80,
                     "error_rate": 0.3
                 }
-            },
-            "ddos": {
-                "indicators": ["bandwidth_spike", "packet_flood", "high_latency"],
-                "thresholds": {
-                    "bandwidth_usage": 150,  # % of normal
-                    "packet_count": 1000,
-                    "error_rate": 0.4
-                }
-            },
-            "mitm": {
-                "indicators": ["auth_anomalies", "traffic_routing", "latency_changes"],
-                "thresholds": {
-                    "latency": 200,  # ms
-                    "packet_loss": 0.1
-                }
             }
         }
 
@@ -65,7 +54,7 @@ class AttackClassifier:
         self.logger = logging.getLogger("AttackClassifier")
 
     def _extract_features(self, network_status: Dict) -> List[float]:
-        """Extract advanced features from network status."""
+        """Extract features from network status."""
         # Network-level features
         network_metrics = [
             network_status["metrics"]["total_bandwidth"],
@@ -84,7 +73,6 @@ class AttackClassifier:
         
         # Device metrics and anomaly indicators
         device_metrics = []
-        security_metrics = []
         anomaly_indicators = []
         
         for device in network_status["devices"]:
@@ -99,12 +87,9 @@ class AttackClassifier:
                 metrics["error_count"]
             ])
             
-            # Security-related features
-            security_metrics.extend([
-                device["security_level"],
-                len(device["vulnerabilities"]),
-                float(device["status"] == "compromised")
-            ])
+            # Device status
+            device_metrics.append(float(device["status"] == "infected"))
+            device_metrics.append(float(device["status"] == "compromised"))
             
             # Device-specific anomaly detection
             if device["type"] == "SmartCamera":
@@ -124,7 +109,7 @@ class AttackClassifier:
                 ])
         
         # Combine all features
-        return network_metrics + device_metrics + security_metrics + anomaly_indicators
+        return network_metrics + device_metrics + anomaly_indicators
 
     def collect_training_data(self, network_status: Dict, attack_status: Dict):
         """Collect network status data for training."""
@@ -140,9 +125,9 @@ class AttackClassifier:
         
         # Log collection event
         if self.event_collector:
-            self.event_collector.record_event(
+            self.event_collector.collect_event(
                 event_type="training_data",
-                details={
+                data={
                     "network_metrics": network_status["metrics"],
                     "attack_type": attack_status["type"],
                     "features_count": len(features)
@@ -243,10 +228,6 @@ class AttackClassifier:
                 metrics = device["metrics"]
                 if prediction == "botnet" and metrics["cpu_usage"] > thresholds["cpu_usage"]:
                     detected_signatures.append("high_cpu")
-                elif prediction == "ddos" and metrics["bandwidth_usage"] > thresholds["bandwidth_usage"]:
-                    detected_signatures.append("bandwidth_spike")
-                elif prediction == "mitm" and device["status"] == "intercepted":
-                    detected_signatures.append("traffic_routing")
         
         return {
             "prediction": prediction,

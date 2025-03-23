@@ -1,12 +1,25 @@
+"""
+Training Data Collection
+====================
+
+Collects training data by simulating normal behavior and various attacks.
+"""
+
 import logging
+import sys
 from pathlib import Path
 from datetime import datetime
 import time
 import json
 import numpy as np
 
+# Add src directory to Python path
+src_dir = Path(__file__).resolve().parent.parent
+if str(src_dir) not in sys.path:
+    sys.path.append(str(src_dir))
+
 from simulation.attack_simulator import AttackSimulator
-from monitoring.event_collector import EventCollector
+from data.event_collector import EventCollector
 from ml.attack_classifier import AttackClassifier
 
 def setup_logging():
@@ -54,100 +67,60 @@ def simulate_attacks(simulator, classifier):
     """Run different types of attacks for ML training."""
     logger = logging.getLogger("DataCollection")
     
-    # Define comprehensive attack scenarios
+    # Define attack scenarios using implemented methods
     attack_configs = [
-        # Botnet attacks with different targets and durations
+        # Botnet attacks
         {
             "type": "botnet",
-            "targets": ["camera_1", "lock_1"],
+            "target_types": ["SmartCamera", "SmartLock"],
             "duration": 180,
-            "method": "create_botnet_attack",
+            "method": "malware_propagation",
             "description": "Multi-device botnet infection"
         },
         {
             "type": "botnet",
-            "targets": ["camera_1"],
+            "target_types": ["SmartCamera"],
             "duration": 120,
-            "method": "create_botnet_attack",
+            "method": "malware_propagation",
             "description": "Single device botnet"
-        },
-        
-        # DDoS attacks with varying intensities
-        {
-            "type": "ddos",
-            "targets": ["camera_1"],
-            "duration": 150,
-            "method": "create_ddos_attack",
-            "description": "Camera network flood"
-        },
-        {
-            "type": "ddos",
-            "targets": ["lock_1"],
-            "duration": 90,
-            "method": "create_ddos_attack",
-            "description": "Lock system flood"
-        },
-        
-        # MitM attacks on different device combinations
-        {
-            "type": "mitm",
-            "targets": ["lock_1", "thermostat_1"],
-            "duration": 200,
-            "method": "create_mitm_attack",
-            "description": "Smart home control interception"
-        },
-        {
-            "type": "mitm",
-            "targets": ["camera_1"],
-            "duration": 160,
-            "method": "create_mitm_attack",
-            "description": "Camera feed interception"
         }
     ]
     
     for config in attack_configs:
         logger.info(f"\nSimulating {config['type']} attack: {config['description']}")
-        logger.info(f"Targets: {config['targets']}")
+        logger.info(f"Targets: {config['target_types']}")
         logger.info(f"Duration: {config['duration']}s")
         
-        # Create and launch attack
-        attack_method = getattr(simulator, config["method"])
-        attack_config = attack_method(targets=config["targets"])
-        attack_id = simulator.launch_attack(attack_config)
+        # Execute attack
+        events = simulator.run_attack_scenario(
+            attack_type=config["type"],
+            target_types=config["target_types"],
+            method=config["method"],
+            duration=config["duration"],
+            interval=5
+        )
         
-        # Collect data during attack
-        start_time = time.time()
-        samples = 0
-        
-        while time.time() - start_time < config["duration"]:
-            # Get current state
+        # Process attack events
+        for event in events:
             network_status = simulator.get_network_status()
-            attack_status = simulator.get_attack_status(attack_id)
             
             # Collect training sample
             classifier.collect_training_data(
                 network_status=network_status,
                 attack_status={
                     "type": config["type"],
-                    "status": attack_status["status"],
-                    "attack_id": attack_id,
+                    "status": "active" if event.success else "failed",
                     "description": config["description"]
                 }
             )
-            samples += 1
             
             # Log attack progress
-            if samples % 10 == 0:  # Every 10 samples
-                elapsed = time.time() - start_time
-                progress = (elapsed / config["duration"]) * 100
-                logger.info(
-                    f"\nAttack Progress: {progress:.1f}%"
-                    f"\n  Status: {attack_status['status']}"
-                    f"\n  Events: {len(attack_status.get('events', []))}"
-                    f"\n  Samples: {samples}"
-                )
-            
-            time.sleep(5)  # Sample every 5 seconds
+            logger.info(
+                f"\nAttack Event:"
+                f"\n  Success: {event.success}"
+                f"\n  Target: {event.target_device.type}"
+                f"\n  Details: {event.details}"
+            )
         
         # Let network recover
         recovery_time = min(30, config["duration"] * 0.2)  # 20% of attack duration or 30s

@@ -1,0 +1,9 @@
+2025-03-23 21:21:52,342 - DataCollection - INFO - Initializing data collection components...
+2025-03-23 21:21:52,344 - simulation.network - INFO - Added device: smartcamera_01 (SmartCamera)
+2025-03-23 21:21:52,344 - simulation.network - INFO - Added device: smartlock_02 (SmartLock)
+2025-03-23 21:21:52,344 - simulation.network - INFO - Added device: smartthermostat_03 (SmartThermostat)
+2025-03-23 21:21:52,346 - DataCollection - INFO - Letting network stabilize for initial baseline...
+2025-03-23 21:22:22,350 - DataCollection - INFO - 
+Starting normal behavior collection...
+2025-03-23 21:22:22,350 - DataCollection - INFO - Collecting normal behavior data for 600 seconds
+2025-03-23 21:23:17,450 - DataCollection - INFO - Normal behavior samples collected: 12 (55s)

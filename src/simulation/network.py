@@ -1,146 +1,112 @@
-from typing import Dict, List, Any
-import random
-from datetime import datetime
+"""
+IoT Network Simulation
+====================
 
+Simulates a smart home IoT network with multiple device types and network connections.
+"""
+
+import json
+import logging
+from dataclasses import dataclass
+from typing import List, Dict
+import networkx as nx
+
+@dataclass
 class IoTDevice:
-    def __init__(self, device_id: str, device_type: str):
-        """Initialize an IoT device with smart home capabilities."""
-        self.id = device_id
-        self.type = device_type
-        self.status = "normal"
+    id: str
+    type: str
+    ip_address: str
+    status: str = "online"
+    vulnerabilities: List[str] = None
+    
+    def to_dict(self) -> Dict:
+        return {
+            "id": self.id,
+            "type": self.type,
+            "ip_address": self.ip_address,
+            "status": self.status,
+            "vulnerabilities": self.vulnerabilities or []
+        }
+
+class SmartHomeNetwork:
+    def __init__(self, num_devices: int = 3):
+        self.logger = logging.getLogger(__name__)
+        self.network = nx.Graph()
+        self.devices: Dict[str, IoTDevice] = {}
         self.connection_type = "WiFi"
-        self.metrics = self._init_metrics()
-        self.security_level = random.uniform(0.6, 0.9)  # Device security rating
-        self.vulnerabilities = self._init_vulnerabilities()
-
-    def _init_metrics(self) -> Dict:
-        """Initialize device metrics based on type."""
-        base_metrics = {
-            "cpu_usage": random.uniform(20, 40),
-            "memory_usage": random.uniform(30, 50),
-            "bandwidth_usage": random.uniform(10, 30),
-            "packet_count": random.randint(100, 500),
-            "error_count": random.randint(0, 5),
-            "connection_strength": random.uniform(0.7, 1.0)
-        }
-
-        # Add device-specific metrics
-        if self.type == "SmartCamera":
-            base_metrics.update({
-                "video_quality": random.uniform(0.8, 1.0),
-                "stream_latency": random.uniform(50, 200),  # ms
-                "motion_detection": "enabled"
-            })
-        elif self.type == "SmartLock":
-            base_metrics.update({
-                "battery_level": random.uniform(0.7, 1.0),
-                "successful_auths": random.randint(10, 50),
-                "failed_auths": random.randint(0, 5)
-            })
-        elif self.type == "SmartThermostat":
-            base_metrics.update({
-                "temperature": random.uniform(20, 25),  # Celsius
-                "humidity": random.uniform(40, 60),
-                "energy_consumption": random.uniform(10, 30)
-            })
-
-        return base_metrics
-
-    def _init_vulnerabilities(self) -> Dict:
-        """Initialize potential device vulnerabilities."""
-        vuln_types = {
-            "SmartCamera": ["weak_password", "unencrypted_stream", "firmware_outdated"],
-            "SmartLock": ["replay_attack", "brute_force", "firmware_outdated"],
-            "SmartThermostat": ["command_injection", "firmware_outdated"]
+        
+        # Define device types and their default vulnerabilities
+        self.device_types = {
+            "SmartCamera": ["weak_password", "unencrypted_stream"],
+            "SmartLock": ["weak_authentication", "replay_attack"],
+            "SmartThermostat": ["firmware_vulnerability", "unauthorized_access"]
         }
         
+        self._initialize_network(num_devices)
+    
+    def _initialize_network(self, num_devices: int):
+        """Initialize the IoT network with specified number of devices."""
+        base_ip = "192.168.1"
+        
+        # Create router node
+        router_id = "router_01"
+        self.network.add_node(router_id, type="router")
+        
+        # Create IoT devices
+        for i, (device_type, vulnerabilities) in enumerate(self.device_types.items(), 1):
+            if i > num_devices:
+                break
+                
+            device_id = f"{device_type.lower()}_{i:02d}"
+            device = IoTDevice(
+                id=device_id,
+                type=device_type,
+                ip_address=f"{base_ip}.{i+10}",
+                vulnerabilities=vulnerabilities.copy()
+            )
+            
+            self.devices[device_id] = device
+            self.network.add_node(device_id, **device.to_dict())
+            
+            # Connect device to router
+            self.network.add_edge(router_id, device_id, type=self.connection_type)
+            
+            self.logger.info(f"Added device: {device_id} ({device.type})")
+    
+    def get_device(self, device_id: str) -> IoTDevice:
+        """Get device by ID."""
+        return self.devices.get(device_id)
+    
+    def get_devices_by_type(self, device_type: str) -> List[IoTDevice]:
+        """Get all devices of specified type."""
+        return [d for d in self.devices.values() if d.type == device_type]
+    
+    def update_device_status(self, device_id: str, status: str):
+        """Update device status."""
+        if device_id in self.devices:
+            self.devices[device_id].status = status
+            self.network.nodes[device_id]["status"] = status
+            self.logger.info(f"Updated {device_id} status to {status}")
+    
+    def get_network_state(self) -> Dict:
+        """Get current state of the network."""
         return {
-            vuln: random.random() < 0.3  # 30% chance of vulnerability
-            for vuln in vuln_types.get(self.type, [])
+            "devices": [d.to_dict() for d in self.devices.values()],
+            "connection_type": self.connection_type,
+            "topology": {
+                "nodes": list(self.network.nodes()),
+                "edges": list(self.network.edges())
+            }
         }
+    
+    def to_json(self) -> str:
+        """Convert network state to JSON string."""
+        return json.dumps(self.get_network_state(), indent=2)
 
-    def update_status(self):
-        """Update device metrics and status."""
-        # Normal fluctuations
-        self.metrics["cpu_usage"] *= random.uniform(0.9, 1.1)
-        self.metrics["memory_usage"] *= random.uniform(0.95, 1.05)
-        self.metrics["bandwidth_usage"] *= random.uniform(0.9, 1.1)
-        
-        # Device-specific updates
-        if self.type == "SmartCamera":
-            self.metrics["stream_latency"] *= random.uniform(0.9, 1.1)
-        elif self.type == "SmartLock":
-            self.metrics["battery_level"] = max(0, self.metrics["battery_level"] - random.uniform(0, 0.01))
-        elif self.type == "SmartThermostat":
-            self.metrics["temperature"] += random.uniform(-0.5, 0.5)
-
-class IoTNetwork:
-    def __init__(self):
-        """Initialize the smart home IoT network."""
-        self.devices = {}
-        self.metrics = {
-            "total_bandwidth": 0,
-            "latency": random.uniform(5, 15),
-            "packet_loss_rate": random.uniform(0.01, 0.03),
-            "error_rate": random.uniform(0.01, 0.02),
-            "connection_stability": random.uniform(0.9, 1.0)
-        }
-        self._setup_devices()
-        self.attack_history = []
-
-    def _setup_devices(self):
-        """Set up default IoT devices."""
-        devices = [
-            ("camera_1", "SmartCamera"),
-            ("lock_1", "SmartLock"),
-            ("thermostat_1", "SmartThermostat")
-        ]
-        
-        for device_id, device_type in devices:
-            self.devices[device_id] = IoTDevice(device_id, device_type)
-
-    def update_metrics(self):
-        """Update network metrics based on device states."""
-        # Update devices
-        for device in self.devices.values():
-            device.update_status()
-
-        # Calculate network-wide metrics
-        total_bandwidth = sum(d.metrics["bandwidth_usage"] for d in self.devices.values())
-        self.metrics["total_bandwidth"] = total_bandwidth
-        
-        # Adjust metrics based on load
-        load_factor = total_bandwidth / (100 * len(self.devices))
-        self.metrics["latency"] *= (1 + 0.1 * load_factor)
-        self.metrics["packet_loss_rate"] *= (1 + 0.2 * load_factor)
-        self.metrics["error_rate"] *= (1 + 0.15 * load_factor)
-        
-        # Update connection stability
-        self.metrics["connection_stability"] = max(
-            0.6,
-            self.metrics["connection_stability"] * random.uniform(0.95, 1.05)
-        )
-
-    def get_status(self) -> Dict[str, Any]:
-        """Get current network status."""
-        self.update_metrics()
-        return {
-            "timestamp": datetime.now().isoformat(),
-            "metrics": self.metrics.copy(),
-            "devices": [
-                {
-                    "id": device.id,
-                    "type": device.type,
-                    "status": device.status,
-                    "metrics": device.metrics.copy(),
-                    "security_level": device.security_level,
-                    "vulnerabilities": device.vulnerabilities.copy()
-                }
-                for device in self.devices.values()
-            ]
-        }
-
-    def record_attack(self, attack_data: Dict):
-        """Record an attack event in the network history."""
-        attack_data["timestamp"] = datetime.now().isoformat()
-        self.attack_history.append(attack_data)
+if __name__ == "__main__":
+    # Setup logging
+    logging.basicConfig(level=logging.INFO)
+    
+    # Test network setup
+    network = SmartHomeNetwork(num_devices=3)
+    print(network.to_json())

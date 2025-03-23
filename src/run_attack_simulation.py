@@ -1,104 +1,98 @@
-import logging
-from pathlib import Path
-from datetime import datetime
-import time
+"""
+Attack Simulation Runner
+======================
 
-from simulation.attack_simulator import AttackSimulator
-from ml.attack_detector import AttackDetector
-from monitoring.event_collector import EventCollector
+Main script to run the IoT attack simulation.
+"""
+
+import json
+import logging
+import os
+from datetime import datetime
+from typing import List
+
+from simulation.network import SmartHomeNetwork
+from simulation.attack_simulator import AttackSimulator, AttackEvent
 
 def setup_logging():
-    """Configure simulation logging."""
-    log_dir = Path("logs")
-    log_dir.mkdir(exist_ok=True)
-    
+    """Setup logging configuration."""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_file = log_dir / f"simulation_{timestamp}.log"
+    log_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "logs")
+    os.makedirs(log_dir, exist_ok=True)
     
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        format="%(asctime)s [%(levelname)s] %(message)s",
         handlers=[
-            logging.FileHandler(log_file),
+            logging.FileHandler(
+                os.path.join(log_dir, f"attack_simulation_{timestamp}.log")
+            ),
             logging.StreamHandler()
         ]
     )
-    return logging.getLogger("Simulation")
 
-def run_simulation():
-    """Run the attack simulation and detection."""
-    logger = setup_logging()
-    logger.info("Starting IoT security simulation")
+def save_events(events: List[AttackEvent]):
+    """Save attack events to file."""
+    data_dir = os.path.join(
+        os.path.dirname(os.path.dirname(__file__)),
+        "data",
+        "events"
+    )
+    os.makedirs(data_dir, exist_ok=True)
+    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_file = os.path.join(data_dir, f"attack_events_{timestamp}.json")
+    
+    with open(output_file, "w") as f:
+        json.dump(
+            [event.to_dict() for event in events],
+            f,
+            indent=2
+        )
+    
+    logging.info(f"Saved {len(events)} events to {output_file}")
 
+def main():
+    """Main simulation runner."""
+    setup_logging()
+    logging.info("Starting IoT attack simulation")
+    
     try:
-        # Initialize components
-        simulator = AttackSimulator()  # Now creates its own network
-        detector = AttackDetector()
-        event_collector = EventCollector()
-
-        # Let network stabilize
-        logger.info("Letting network stabilize...")
-        time.sleep(10)
-
-        # Create different attack types
-        attacks = [
-            simulator.create_botnet_attack(["camera1", "lock1"], duration=180),
-            simulator.create_ddos_attack(["camera2"], duration=120),
-            simulator.create_mitm_attack(["lock2", "thermostat1"], duration=150)
-        ]
-
-        # Run simulation
-        for attack in attacks:
-            # Launch attack
-            logger.info(f"Launching {attack.type} attack...")
-            attack_id = simulator.launch_attack(attack)
-
-            # Monitor attack progress
-            start_time = time.time()
-            while time.time() - start_time < attack.duration:
-                # Get current network status
-                network_status = simulator.get_network_status()
-                
-                # Detect attacks
-                detection_result = detector.detect(network_status)
-                
-                # Record events
-                event_collector.record_attack_detection(detection_result, network_status)
-                
-                # Log detection results
-                logger.info(f"\nDetection Results:")
-                logger.info(f"Attack Type: {detection_result['detected_type']}")
-                logger.info(f"Confidence: {detection_result['confidence']:.3f}")
-                if detection_result.get("severity"):
-                    logger.info(f"Severity: {detection_result['severity']}")
-                    if detection_result['severity'] == "high":
-                        logger.warning("HIGH SEVERITY ATTACK DETECTED!")
-                
-                time.sleep(5)  # Update every 5 seconds
-
-            # Let network recover between attacks
-            logger.info(f"Attack {attack_id} completed")
-            logger.info("Letting network recover...")
-            time.sleep(20)
-
-        # Print final statistics
-        logger.info("\nSimulation Summary:")
-        history = detector.get_detection_history()
+        # Initialize network
+        network = SmartHomeNetwork(num_devices=3)
+        logging.info("Network initialized:\n" + network.to_json())
         
-        total_alerts = sum(1 for d in history if d["alert_triggered"])
-        high_severity = sum(1 for d in history if d.get("severity") == "high")
+        # Setup attack simulator
+        simulator = AttackSimulator(network)
         
-        logger.info(f"Total Detections: {len(history)}")
-        logger.info(f"Total Alerts: {total_alerts}")
-        logger.info(f"High Severity Events: {high_severity}")
+        # Run attack scenario
+        events = simulator.run_attack_scenario(
+            attack_type="botnet",
+            target_types=["SmartCamera", "SmartLock"],
+            method="malware_propagation",
+            duration=300,  # 5 minutes
+            interval=10    # Attack every 10 seconds
+        )
         
-        logger.info("Simulation completed successfully")
-
-    except KeyboardInterrupt:
-        logger.info("\nSimulation interrupted by user")
+        # Save results
+        save_events(events)
+        
+        # Print summary
+        total_attacks = len(events)
+        successful_attacks = sum(1 for e in events if e.success)
+        
+        logging.info("\nSimulation Summary:")
+        logging.info(f"Total Attacks: {total_attacks}")
+        logging.info(f"Successful Attacks: {successful_attacks}")
+        logging.info(f"Success Rate: {(successful_attacks/total_attacks)*100:.1f}%")
+        
+        # Show final network state
+        logging.info("\nFinal Network State:")
+        logging.info(network.to_json())
+        
     except Exception as e:
-        logger.error(f"Error during simulation: {str(e)}")
+        logging.error(f"Simulation failed: {str(e)}", exc_info=True)
         raise
 
 if __name__ == "__main__":
-    run_simulation()
+    main()

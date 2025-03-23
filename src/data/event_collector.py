@@ -17,6 +17,10 @@ class EventCollector:
         
         # Create directories
         self.events_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Create empty files if they don't exist
+        self.alerts_file.touch()
+        self.events_file.touch()
 
     def _setup_logging(self):
         """Configure logging for the event collector."""
@@ -46,35 +50,6 @@ class EventCollector:
         except Exception as e:
             self.logger.error(f"Failed to store event: {str(e)}")
             raise
-
-    def get_alert_stats(self) -> Dict[str, Any]:
-        """Get real-time statistics about alerts."""
-        alerts = self.get_events(event_type="security_alert", size=1000)
-        
-        if not alerts:
-            return {
-                "total_alerts": 0,
-                "severity_distribution": {},
-                "attack_types": {},
-                "recent_alerts": []
-            }
-
-        # Calculate statistics
-        severity_dist = {}
-        attack_types = {}
-        for alert in alerts:
-            severity = alert.get("severity", "unknown")
-            attack_type = alert.get("details", {}).get("attack_type", "unknown")
-            
-            severity_dist[severity] = severity_dist.get(severity, 0) + 1
-            attack_types[attack_type] = attack_types.get(attack_type, 0) + 1
-
-        return {
-            "total_alerts": len(alerts),
-            "severity_distribution": severity_dist,
-            "attack_types": attack_types,
-            "recent_alerts": alerts[:5]  # Last 5 alerts
-        }
 
     def collect_event(self, event_type: str, data: Dict[str, Any],
                      source: Optional[str] = None, target: Optional[str] = None,
@@ -109,9 +84,9 @@ class EventCollector:
             )
 
     def get_events(self, event_type: Optional[str] = None,
-                    start_time: Optional[str] = None,
-                    end_time: Optional[str] = None,
-                    size: int = 100) -> list:
+                   start_time: Optional[str] = None,
+                   end_time: Optional[str] = None,
+                   size: int = 100) -> list:
         """Retrieve events from local file storage."""
         events = []
         try:
@@ -133,19 +108,46 @@ class EventCollector:
         events.sort(key=lambda x: x["timestamp"], reverse=True)
         return events[:size]
 
-if __name__ == "__main__":
-    # Test event collector
-    collector = EventCollector()
-    
-    test_event = {
-        "cpu_usage": 75.5,
-        "memory_usage": 60.2,
-        "bandwidth_usage": 45.8,
-        "error_count": 2
-    }
-    
-    collector.collect_event(
-        event_type="device_metrics",
-        data=test_event,
-        source="device_001"
-    )
+    def get_alert_stats(self) -> Dict[str, Any]:
+        """Get real-time statistics about alerts."""
+        alerts = []
+        try:
+            if self.alerts_file.exists():
+                with open(self.alerts_file, 'r') as f:
+                    alerts = [json.loads(line) for line in f]
+        except Exception as e:
+            self.logger.error(f"Failed to read alerts: {str(e)}")
+            return {
+                "total_alerts": 0,
+                "severity_distribution": {},
+                "attack_types": {},
+                "recent_alerts": []
+            }
+
+        if not alerts:
+            return {
+                "total_alerts": 0,
+                "severity_distribution": {},
+                "attack_types": {},
+                "recent_alerts": []
+            }
+
+        # Calculate statistics
+        severity_dist = {}
+        attack_types = {}
+        for alert in alerts:
+            severity = alert.get("severity", "unknown")
+            attack_type = alert.get("details", {}).get("attack_type", "unknown")
+            
+            severity_dist[severity] = severity_dist.get(severity, 0) + 1
+            attack_types[attack_type] = attack_types.get(attack_type, 0) + 1
+
+        # Sort alerts by timestamp descending
+        alerts.sort(key=lambda x: x["timestamp"], reverse=True)
+
+        return {
+            "total_alerts": len(alerts),
+            "severity_distribution": severity_dist,
+            "attack_types": attack_types,
+            "recent_alerts": alerts[:5]  # Last 5 alerts
+        }

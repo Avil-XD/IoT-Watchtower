@@ -9,6 +9,26 @@
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
         "type": "dashboard"
+      },
+      {
+        "datasource": "Elasticsearch",
+        "enable": true,
+        "iconColor": "rgb(255, 96, 96)",
+        "name": "High Risk Alerts",
+        "query": "SELECT * FROM \"iot-attacks\" WHERE type = 'attack_detection' AND confidence > 0.9",
+        "showLine": true,
+        "textFormat": "Attack Type: {{attack_type}} - Confidence: {{confidence}}",
+        "titleFormat": "High Risk Attack Detected"
+      },
+      {
+        "datasource": "Elasticsearch",
+        "enable": true,
+        "iconColor": "rgb(255, 196, 0)",
+        "name": "Device Compromise Alerts",
+        "query": "SELECT * FROM \"iot-attacks\" WHERE type = 'attack_detection' AND attack_type = 'botnet'",
+        "showLine": true,
+        "textFormat": "Compromised Devices: {{targets}}",
+        "titleFormat": "Device Compromise Detected"
       }
     ]
   },

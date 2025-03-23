@@ -56,14 +56,33 @@ class SecurityMonitoring:
                             })
                     
                     # Update dashboard with attack data
+                    # Enhanced detection result with severity and patterns
                     detection_result = {
                         "detected_type": attack.get("attack_type"),
                         "confidence": attack.get("confidence"),
                         "is_attack": True,
-                        "alert_triggered": attack.get("confidence", 0) > 0.8
+                        "severity": attack.get("severity"),
+                        "anomaly_score": attack.get("anomaly_score", 0),
+                        "alert_triggered": attack.get("alert_triggered", False)
                     }
+
+                    # Get attack patterns if available
+                    if "attack_patterns" in attack:
+                        detection_result["attack_patterns"] = attack["attack_patterns"]
                     
+                    # Get severity distribution if available
+                    if "severity_distribution" in attack:
+                        detection_result["severity_distribution"] = attack["severity_distribution"]
+
+                    # Update dashboard with enhanced attack data
                     self.dashboard.update_data(network_status, detection_result)
+
+                    # Log high severity alerts
+                    if detection_result["alert_triggered"] and detection_result["severity"] == "high":
+                        self.logger.warning(
+                            f"High severity {detection_result['detected_type']} attack detected! "
+                            f"Anomaly score: {detection_result['anomaly_score']:.3f}"
+                        )
                 
             except Exception as e:
                 self.logger.error(f"Error updating dashboard: {str(e)}")

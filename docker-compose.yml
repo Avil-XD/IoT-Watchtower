@@ -14,6 +14,11 @@ services:
       - elasticsearch_data:/usr/share/elasticsearch/data
     networks:
       - iot_monitoring
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   grafana:
     image: grafana/grafana:latest
@@ -23,11 +28,46 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./src/config/grafana_dashboard.json:/etc/grafana/provisioning/dashboards/iot_security.json
+      - ./src/config/grafana_dashboard.json:/etc/grafana/provisioning/dashboards/iot_security.json:ro
       - grafana_data:/var/lib/grafana
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=iotsecurity
       - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/iot_security.json
+    networks:
+      - iot_monitoring
+
+  iot_simulation:
+    build: .
+    container_name: iot_simulation
+    depends_on:
+      - elasticsearch
+    environment:
+      - ELASTICSEARCH_HOST=elasticsearch
+      - ELASTICSEARCH_PORT=9200
+    volumes:
+      - ./src:/app/src
+      - ./logs:/app/logs
+      - ./models:/app/models
+      - ./data:/app/data
+    command: python src/run_attack_simulation.py
+    networks:
+      - iot_monitoring
+
+  monitoring_dashboard:
+    build: .
+    container_name: iot_monitoring_dashboard
+    depends_on:
+      - elasticsearch
+      - iot_simulation
+    environment:
+      - ELASTICSEARCH_HOST=elasticsearch
+      - ELASTICSEARCH_PORT=9200
+    ports:
+      - "8050:8050"
+    volumes:
+      - ./src:/app/src
+      - ./logs:/app/logs
+    command: python src/monitoring/run_monitoring.py
     networks:
       - iot_monitoring
 

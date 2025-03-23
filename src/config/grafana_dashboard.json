@@ -23,20 +23,14 @@
         "conditions": [
           {
             "evaluator": {
-              "params": [
-                0.02
-              ],
+              "params": [0.8],
               "type": "gt"
             },
             "operator": {
               "type": "and"
             },
             "query": {
-              "params": [
-                "A",
-                "5m",
-                "now"
-              ]
+              "params": ["A", "5m", "now"]
             },
             "reducer": {
               "params": [],
@@ -48,7 +42,7 @@
         "executionErrorState": "alerting",
         "frequency": "1m",
         "handler": 1,
-        "name": "High Network Error Rate",
+        "name": "High Confidence Attack Alert",
         "noDataState": "no_data",
         "notifications": []
       },
@@ -76,6 +70,7 @@
       },
       "lines": true,
       "linewidth": 1,
+      "links": [],
       "nullPointMode": "null",
       "percentage": false,
       "pointradius": 2,
@@ -89,24 +84,26 @@
         {
           "bucketAggs": [
             {
-              "field": "timestamp",
+              "field": "@timestamp",
               "id": "2",
               "settings": {
-                "interval": "auto"
+                "interval": "auto",
+                "min_doc_count": 0,
+                "trimEdges": 0
               },
               "type": "date_histogram"
             }
           ],
           "metrics": [
             {
-              "field": "details.error_rate",
+              "field": "confidence",
               "id": "1",
               "type": "avg"
             }
           ],
-          "query": "",
+          "query": "type:attack_detection",
           "refId": "A",
-          "timeField": "timestamp"
+          "timeField": "@timestamp"
         }
       ],
       "thresholds": [
@@ -115,13 +112,12 @@
           "fill": true,
           "line": true,
           "op": "gt",
-          "value": 0.02
+          "value": 0.8
         }
       ],
       "timeFrom": null,
-      "timeRegions": [],
       "timeShift": null,
-      "title": "Network Error Rate",
+      "title": "Attack Detection Confidence",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -137,40 +133,24 @@
       },
       "yaxes": [
         {
-          "format": "percentunit",
-          "label": null,
+          "format": "short",
+          "label": "Confidence",
           "logBase": 1,
-          "max": null,
-          "min": null,
+          "max": "1",
+          "min": "0",
           "show": true
         },
         {
           "format": "short",
-          "label": null,
+          "label": "",
           "logBase": 1,
           "max": null,
           "min": null,
-          "show": true
+          "show": false
         }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
+      ]
     },
     {
-      "cards": {
-        "cardPadding": null,
-        "cardRound": null
-      },
-      "color": {
-        "cardColor": "#b4ff00",
-        "colorScale": "sqrt",
-        "colorScheme": "interpolateOranges",
-        "exponent": 0.5,
-        "mode": "spectrum"
-      },
-      "dataFormat": "timeseries",
       "datasource": "Elasticsearch",
       "gridPos": {
         "h": 8,
@@ -178,323 +158,49 @@
         "x": 12,
         "y": 0
       },
-      "heatmap": {},
-      "hideZeroBuckets": false,
-      "highlightCards": true,
       "id": 2,
-      "legend": {
-        "show": false
+      "title": "Most Targeted Devices",
+      "type": "bargauge",
+      "options": {
+        "orientation": "horizontal",
+        "textMode": "auto",
+        "colorMode": "value",
+        "valueMode": "color",
+        "graphMode": "area",
+        "justifyMode": "auto"
       },
-      "reverseYBuckets": false,
-      "targets": [
-        {
-          "bucketAggs": [
-            {
-              "field": "timestamp",
-              "id": "2",
-              "settings": {
-                "interval": "auto"
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "green"
               },
-              "type": "date_histogram"
-            }
-          ],
-          "metrics": [
-            {
-              "field": "details.cpu_usage",
-              "id": "1",
-              "type": "avg"
-            }
-          ],
-          "query": "",
-          "refId": "A",
-          "timeField": "timestamp"
-        }
-      ],
-      "title": "Device CPU Usage Heatmap",
-      "tooltip": {
-        "show": true,
-        "showHistogram": false
-      },
-      "type": "heatmap",
-      "xAxis": {
-        "show": true
-      },
-      "xBucketNumber": null,
-      "xBucketSize": null,
-      "yAxis": {
-        "decimals": null,
-        "format": "percent",
-        "logBase": 1,
-        "max": null,
-        "min": null,
-        "show": true,
-        "splitFactor": null
-      },
-      "yBucketBound": "auto",
-      "yBucketNumber": null,
-      "yBucketSize": null
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Elasticsearch",
-      "fill": 1,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 8
-      },
-      "id": 3,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "bucketAggs": [
-            {
-              "field": "timestamp",
-              "id": "2",
-              "settings": {
-                "interval": "auto"
+              {
+                "value": 5,
+                "color": "yellow"
               },
-              "type": "date_histogram"
-            }
-          ],
-          "metrics": [
-            {
-              "field": "details.bandwidth_usage",
-              "id": "1",
-              "type": "avg"
-            }
-          ],
-          "query": "",
-          "refId": "A",
-          "timeField": "timestamp"
+              {
+                "value": 10,
+                "color": "red"
+              }
+            ]
+          }
         }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Network Bandwidth Usage",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "bytes",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "columns": [],
-      "datasource": "Elasticsearch",
-      "fontSize": "100%",
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 8
-      },
-      "id": 4,
-      "pageSize": null,
-      "showHeader": true,
-      "sort": {
-        "col": 0,
-        "desc": true
-      },
-      "styles": [
-        {
-          "alias": "Time",
-          "align": "auto",
-          "dateFormat": "YYYY-MM-DD HH:mm:ss",
-          "pattern": "Time",
-          "type": "date"
-        },
-        {
-          "alias": "",
-          "align": "auto",
-          "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(237, 129, 40, 0.89)",
-            "rgba(50, 172, 45, 0.97)"
-          ],
-          "decimals": 2,
-          "pattern": "/.*/",
-          "thresholds": [],
-          "type": "number",
-          "unit": "short"
-        }
-      ],
-      "targets": [
-        {
-          "bucketAggs": [],
-          "metrics": [
-            {
-              "field": "select field",
-              "id": "1",
-              "type": "count"
-            }
-          ],
-          "query": "event_type:attack_*",
-          "refId": "A",
-          "timeField": "timestamp"
-        }
-      ],
-      "title": "Recent Attack Events",
-      "transform": "table",
-      "type": "table"
-    },
-    {
-      "circleMaxSize": 30,
-      "circleMinSize": 2,
-      "colors": [
-        "#73BF69",
-        "#FADE2A",
-        "#F2495C"
-      ],
-      "datasource": "Elasticsearch",
-      "decimals": 0,
-      "esMetric": "Count",
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 16
-      },
-      "hideEmpty": false,
-      "hideZero": false,
-      "id": 5,
-      "initialZoom": 1,
-      "locationData": "table",
-      "mapCenter": "(0°, 0°)",
-      "mapCenterLatitude": 0,
-      "mapCenterLongitude": 0,
-      "maxDataPoints": 1,
-      "showLegend": true,
-      "stickyLabels": false,
-      "tableQueryOptions": {
-        "geohashField": "details.location",
-        "latitudeField": "details.latitude",
-        "longitudeField": "details.longitude",
-        "metricField": "details.severity",
-        "queryType": "geohash"
       },
       "targets": [
         {
           "bucketAggs": [
             {
-              "field": "details.location",
-              "id": "2",
-              "type": "geohash_grid"
-            }
-          ],
-          "metrics": [
-            {
-              "field": "details.severity",
-              "id": "1",
-              "type": "avg"
-            }
-          ],
-          "query": "",
-          "refId": "A",
-          "timeField": "timestamp"
-        }
-      ],
-      "thresholds": "0,5,8",
-      "title": "Attack Origin Map",
-      "type": "grafana-worldmap-panel",
-      "unitPlural": "",
-      "unitSingle": "",
-      "valueName": "total"
-    },
-    {
-      "aliasColors": {},
-      "breakPoint": "50%",
-      "cacheTimeout": null,
-      "combine": {
-        "label": "Others",
-        "threshold": 0
-      },
-      "datasource": "Elasticsearch",
-      "fontSize": "80%",
-      "format": "short",
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 16
-      },
-      "id": 6,
-      "interval": null,
-      "legend": {
-        "percentage": true,
-        "show": true,
-        "values": true
-      },
-      "legendType": "Right side",
-      "links": [],
-      "maxDataPoints": 3,
-      "nullPointMode": "connected",
-      "pieType": "donut",
-      "strokeWidth": 1,
-      "targets": [
-        {
-          "bucketAggs": [
-            {
-              "field": "attack_type",
+              "field": "target.keyword",
               "id": "2",
               "settings": {
                 "min_doc_count": 1,
                 "order": "desc",
-                "orderBy": "_term",
+                "orderBy": "_count",
                 "size": "10"
               },
               "type": "terms"
@@ -502,30 +208,154 @@
           ],
           "metrics": [
             {
-              "field": "select field",
               "id": "1",
               "type": "count"
             }
           ],
-          "query": "",
+          "query": "type:attack_detection",
           "refId": "A",
-          "timeField": "timestamp"
+          "timeField": "@timestamp"
         }
-      ],
-      "title": "Attack Type Distribution",
-      "type": "grafana-piechart-panel",
-      "valueName": "current"
+      ]
+    },
+    {
+      "datasource": "Elasticsearch",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 3,
+      "title": "Attack Types Distribution",
+      "type": "piechart",
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "right",
+          "values": ["value"]
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "green"
+              }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "bucketAggs": [
+            {
+              "field": "attack_type.keyword",
+              "id": "2",
+              "settings": {
+                "min_doc_count": 1,
+                "order": "desc",
+                "orderBy": "_count",
+                "size": "10"
+              },
+              "type": "terms"
+            }
+          ],
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "type:attack_detection",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ]
+    },
+    {
+      "datasource": "Elasticsearch",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 4,
+      "title": "Successful vs Blocked Attacks",
+      "type": "stat",
+      "options": {
+        "textMode": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "green"
+              },
+              {
+                "value": 0.3,
+                "color": "yellow"
+              },
+              {
+                "value": 0.5,
+                "color": "red"
+              }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "bucketAggs": [
+            {
+              "field": "blocked",
+              "id": "2",
+              "settings": {
+                "min_doc_count": 1
+              },
+              "type": "terms"
+            }
+          ],
+          "metrics": [
+            {
+              "id": "1",
+              "type": "count"
+            }
+          ],
+          "query": "type:attack_detection",
+          "refId": "A",
+          "timeField": "@timestamp"
+        }
+      ]
     }
   ],
   "refresh": "5s",
-  "schemaVersion": 22,
+  "schemaVersion": 27,
   "style": "dark",
-  "tags": [],
+  "tags": ["iot", "security"],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
@@ -543,7 +373,7 @@
     ]
   },
   "timezone": "",
-  "title": "IoT Security Dashboard",
+  "title": "IoT Security Monitor",
   "uid": "iot_security",
   "version": 1
 }
